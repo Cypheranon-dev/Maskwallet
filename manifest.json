@@ -1,0 +1,25 @@
+{
+  "name": "Mask Wallet",
+  "short_name": "Mask",
+  "description": "Privacy-first self-custodial Zcash wallet. Inspired by ZODL.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#05070d",
+  "theme_color": "#f0762a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/f0762a/05070d?text=M",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://via.placeholder.com/512/f0762a/05070d?text=M",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
