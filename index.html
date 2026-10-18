@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mask Wallet — Private Zcash</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" />
+  <style>
+    body { background: #05070d; color: #e8e6e1; }
+    .glass { background: rgba(10, 12, 20, 0.75); backdrop-filter: blur(16px); border: 1px solid rgba(240, 118, 42, 0.15); }
+    .accent { color: #f0762a; }
+    .btn-primary { background: #f0762a; color: #05070d; }
+    .btn-primary:hover { background: #ff8a3d; }
+    .seed-word { background: #1c3d32; }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+  <div class="max-w-lg mx-auto px-4 py-8">
+    <!-- Header -->
+    <header class="text-center mb-10">
+      <div class="inline-flex items-center gap-3 mb-2">
+        <i class="fa-solid fa-mask text-3xl accent"></i>
+        <h1 class="text-3xl font-bold tracking-tight">Mask</h1>
+      </div>
+      <p class="text-sm text-gray-400">Private by default. Provable by choice.</p>
+      <p class="text-xs text-gray-500 mt-1">Zcash wallet • Inspired by ZODL</p>
+    </header>
+
+    <!-- App Container -->
+    <div id="app" class="space-y-6">
+      <!-- Create Screen -->
+      <div id="create-screen" class="glass rounded-2xl p-6">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-plus-circle accent"></i> Create Wallet
+        </h2>
+        <p class="text-sm text-gray-400 mb-6">Generate a new self-custodial Zcash wallet entirely in your browser. Your keys never leave this device.</p>
+        <button id="create-btn" class="btn-primary w-full py-3 rounded-xl font-semibold transition">
+          Create New Wallet
+        </button>
+      </div>
+
+      <!-- Secure Screen -->
+      <div id="secure-screen" class="glass rounded-2xl p-6 hidden">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-shield-halved accent"></i> Secure Your Wallet
+        </h2>
+        <p class="text-sm text-gray-400 mb-4">Write down these 24 words in order. This is the only way to recover your funds.</p>
+        <div id="seed-display" class="grid grid-cols-3 gap-2 mb-6 text-sm"></div>
+        <div class="flex gap-2 mb-4">
+          <button id="copy-seed" class="flex-1 py-2 rounded-lg border border-gray-700 text-sm hover:border-accent">Copy</button>
+          <button id="confirm-backup" class="flex-1 btn-primary py-2 rounded-lg text-sm font-medium">I've Backed It Up</button>
+        </div>
+        <div class="pt-4 border-t border-gray-800">
+          <label class="text-xs text-gray-500 block mb-1">Optional: Encrypt locally with password</label>
+          <input id="password" type="password" placeholder="Set a password" class="w-full bg-black/40 border border-gray-700 rounded-lg px-3 py-2 text-sm focus:border-accent outline-none" />
+        </div>
+      </div>
+
+      <!-- Use Screen -->
+      <div id="use-screen" class="glass rounded-2xl p-6 hidden">
+        <h2 class="text-xl font-semibold mb-4 flex items-center gap-2">
+          <i class="fa-solid fa-wallet accent"></i> Your Wallet
+        </h2>
+        <div class="bg-black/40 rounded-xl p-4 mb-4">
+          <p class="text-xs text-gray-500 mb-1">Unified Address (demo)</p>
+          <p id="address" class="text-sm break-all font-mono">Generating...</p>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <button class="py-2 rounded-lg border border-gray-700 text-sm">Receive</button>
+          <button class="py-2 rounded-lg border border-gray-700 text-sm">Send</button>
+        </div>
+        <p class="text-xs text-center text-gray-500">Full shielded sync coming in next release via WebZjs</p>
+        <button id="logout" class="mt-4 w-full text-xs text-red-400 hover:text-red-300">Clear Wallet</button>
+      </div>
+    </div>
+
+    <footer class="text-center text-xs text-gray-600 mt-10">
+      Open source • Self-custody • No tracking<br>
+      <a href="https://github.com/Cypheranon-dev/Maskwallet" class="accent hover:underline">GitHub</a>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
