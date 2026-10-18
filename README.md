@@ -21,12 +21,14 @@ Inspired by [ZODL](https://zodl.com) (formerly Zashi) — shielded by default, y
 - Dashboard with balance + USD, QR, tabs (Send/Receive/History/Settings)
 - New receiving addresses, copy, demo send
 - Fully client-side, no tracking, GitHub Pages ready
+- **PWA** — installable on Android & iOS home screens
 
 ### Status
 
 - ✅ WebZjs structure ready for real shielded sync
 - ✅ Hardware + Tor UI paths
 - ✅ Price feed + multi-account + animations
+- ✅ PWA + Capacitor-ready for native Android/iOS
 - ⚠️ Full real Orchard sync & broadcast still needs WASM bundling of WebZjs (next engineering step)
 - ⚠️ **Test version only** — do not use with real funds
 
@@ -34,6 +36,14 @@ Inspired by [ZODL](https://zodl.com) (formerly Zashi) — shielded by default, y
 
 1. Open `index.html` or serve statically
 2. Enable GitHub Pages (Settings → Pages → main / root) → live at `https://cypheranon-dev.github.io/Maskwallet/`
+
+## Production & Mobile Publishing
+
+See **[PRODUCTION.md](PRODUCTION.md)** for:
+- Making it installable as a PWA
+- Wrapping with Capacitor for real Android APK / iOS IPA
+- Publishing to Google Play & App Store
+- Alternative: forking the open-source ZODL native apps
 
 ## Principles
 
