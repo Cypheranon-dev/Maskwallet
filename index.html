@@ -15,14 +15,15 @@
     .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 8px 25px rgba(240,118,42,0.3); }
     .seed-word { background: #1c3d32; border: 1px solid rgba(143, 217, 182, 0.2); }
     .tab.active { border-bottom: 2px solid #f0762a; color: #f0762a; }
-    .progress { background: linear-gradient(90deg, #f0762a, #8fd9b6); }
+    .progress { background: linear-gradient(90deg, #f0762a, #8fd9b6); transition: width 1s ease; }
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.6} }
     .syncing { animation: pulse 1.5s infinite; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-in { animation: fadeIn 0.4s ease-out; }
   </style>
 </head>
 <body class="min-h-screen antialiased">
   <div class="max-w-md mx-auto px-4 py-6 min-h-screen flex flex-col">
-    <!-- Header -->
     <header class="text-center mb-6">
       <div class="inline-flex items-center gap-2">
         <i class="fa-solid fa-mask text-2xl accent"></i>
@@ -31,22 +32,19 @@
       <p class="text-xs text-gray-500 mt-1">Private Zcash • Inspired by ZODL</p>
     </header>
 
-    <!-- Warning -->
     <div class="bg-amber-900/40 border border-amber-700/50 rounded-lg p-3 mb-4 text-xs text-amber-200">
-      <i class="fa-solid fa-triangle-exclamation mr-1"></i> Test version. Do not use with real funds. Full shielded sync coming via WebZjs.
+      <i class="fa-solid fa-triangle-exclamation mr-1"></i> Test version. Do not use with real funds. WebZjs integration structured for full shielded sync.
     </div>
 
     <div id="app" class="flex-1 flex flex-col">
-      <!-- Onboarding / Create / Restore -->
-      <div id="onboard" class="glass rounded-2xl p-6 flex-1 flex flex-col justify-center">
+      <div id="onboard" class="glass rounded-2xl p-6 flex-1 flex flex-col justify-center fade-in">
         <h2 class="text-xl font-semibold mb-2">Welcome to Mask</h2>
         <p class="text-sm text-gray-400 mb-6">Self-custodial Zcash wallet. Your keys never leave this device.</p>
         <button id="create-new" class="btn-primary w-full py-3 rounded-xl font-semibold mb-3">Create New Wallet</button>
         <button id="restore" class="w-full py-3 rounded-xl border border-gray-700 font-medium hover:border-accent">Restore from Seed</button>
       </div>
 
-      <!-- Seed Display + Verify -->
-      <div id="seed-screen" class="glass rounded-2xl p-6 hidden flex-1">
+      <div id="seed-screen" class="glass rounded-2xl p-6 hidden flex-1 fade-in">
         <h2 class="text-lg font-semibold mb-2 flex items-center gap-2"><i class="fa-solid fa-shield-halved accent"></i> Backup Your Seed</h2>
         <p class="text-xs text-gray-400 mb-4">Write these 24 words down. This is the only way to recover your wallet.</p>
         <div id="seed-words" class="grid grid-cols-3 gap-1.5 mb-4 text-xs"></div>
@@ -59,8 +57,7 @@
         <button id="finish-setup" class="btn-primary w-full py-3 rounded-xl font-semibold hidden">Continue to Wallet</button>
       </div>
 
-      <!-- Password Setup -->
-      <div id="password-screen" class="glass rounded-2xl p-6 hidden flex-1">
+      <div id="password-screen" class="glass rounded-2xl p-6 hidden flex-1 fade-in">
         <h2 class="text-lg font-semibold mb-2">Secure with Password</h2>
         <p class="text-xs text-gray-400 mb-4">Encrypt your seed locally. Required for this device.</p>
         <input id="pw1" type="password" placeholder="Password (min 8 chars)" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-2 outline-none focus:border-accent" />
@@ -68,20 +65,17 @@
         <button id="set-password" class="btn-primary w-full py-3 rounded-xl font-semibold">Encrypt & Open Wallet</button>
       </div>
 
-      <!-- Main Wallet -->
       <div id="wallet" class="hidden flex-1 flex flex-col">
-        <!-- Balance -->
-        <div class="glass rounded-2xl p-5 mb-4">
+        <div class="glass rounded-2xl p-5 mb-4 fade-in">
           <div class="flex justify-between items-start mb-1">
-            <span class="text-xs text-gray-500">Balance</span>
+            <span class="text-xs text-gray-500">Balance • Account <span id="account-num">1</span></span>
             <span id="sync-status" class="text-xs text-amber-400 syncing">Syncing...</span>
           </div>
-          <div class="text-3xl font-bold mb-1">0.00 <span class="text-lg text-gray-400">ZEC</span></div>
-          <div class="text-sm text-gray-500">≈ $0.00 USD</div>
-          <div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div class="progress h-full w-1/3"></div></div>
+          <div class="text-3xl font-bold mb-1" id="balance">0.00 <span class="text-lg text-gray-400">ZEC</span></div>
+          <div class="text-sm text-gray-500" id="usd">≈ $0.00 USD</div>
+          <div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="progress-bar" class="progress h-full w-0"></div></div>
         </div>
 
-        <!-- Address -->
         <div class="glass rounded-xl p-4 mb-4">
           <div class="flex justify-between items-center mb-2">
             <span class="text-xs text-gray-500">Unified Address</span>
@@ -91,7 +85,6 @@
           <div id="qr" class="flex justify-center mt-3"></div>
         </div>
 
-        <!-- Tabs -->
         <div class="flex border-b border-gray-800 mb-3 text-sm">
           <button data-tab="send" class="tab flex-1 py-2 text-center">Send</button>
           <button data-tab="receive" class="tab flex-1 py-2 text-center active">Receive</button>
@@ -99,7 +92,6 @@
           <button data-tab="settings" class="tab flex-1 py-2 text-center">Settings</button>
         </div>
 
-        <!-- Tab Content -->
         <div id="tab-content" class="flex-1 overflow-auto">
           <div id="send" class="hidden">
             <input id="send-to" placeholder="Recipient unified address" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-2 outline-none focus:border-accent" />
@@ -113,13 +105,19 @@
             <p class="text-xs text-center text-gray-600">Diversifier index for better privacy</p>
           </div>
           <div id="history" class="hidden text-sm">
-            <p class="text-gray-500 text-center py-6">No transactions yet. Full history after sync.</p>
+            <p class="text-gray-500 text-center py-6">No transactions yet. Full history after WebZjs sync.</p>
           </div>
           <div id="settings" class="hidden space-y-3 text-sm">
+            <button id="switch-account" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Switch / New Account</button>
             <button id="export-seed" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Export Seed Phrase</button>
             <button id="change-pw" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Change Password</button>
+            <div class="flex items-center justify-between py-2 px-3 border border-gray-700 rounded-lg">
+              <span>Tor routing (privacy)</span>
+              <input id="tor-toggle" type="checkbox" class="accent-orange-500" />
+            </div>
+            <button id="hw-wallet" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Connect Hardware Wallet</button>
             <button id="clear-wallet" class="w-full py-2.5 rounded-lg border border-red-800 text-red-400 text-left px-3">Clear Wallet from Device</button>
-            <div class="text-xs text-gray-600 pt-2">Mask Wallet v1.1 • Testnet demo mode</div>
+            <div class="text-xs text-gray-600 pt-2">Mask Wallet v1.2 • WebZjs-ready • Test mode</div>
           </div>
         </div>
       </div>
