@@ -2,46 +2,41 @@
 
 **Privacy-first self-custodial Zcash wallet for the browser.**
 
-Inspired by [ZODL](https://zodl.com) (formerly Zashi) — shielded by default, your keys, your crypto, no tracking.
+Inspired by [ZODL](https://zodl.com) (formerly Zashi) — shielded by default, your keys, your crypto, no tracking. Competes in UX with modern wallets like Trust Wallet while staying Zcash-native and browser-first.
 
-## v1 — Public Production Test
+## v1.1 — Interactive Complex Production Test
 
-This is the first public test version of Mask Wallet. It demonstrates the core flow:
+This version delivers a full interactive experience:
 
-1. **Create** a new wallet (BIP39 seed generated entirely in your browser)
-2. **Secure** it (backup seed phrase + optional local password encryption)
-3. **Use** it (view address, receive, prepare for shielded transactions)
+- **Create** new wallet with real 24-word BIP39 (via audited @scure/bip39)
+- **Secure** with multi-step backup verification + local AES-GCM password encryption
+- **Restore** from seed
+- **Use** with dashboard, balance (sync simulation), unified address + QR, Send / Receive / History / Settings tabs
+- Generate new receiving addresses, copy, demo send flow
+- Fully client-side, no tracking, GitHub Pages ready
 
-### Current Status (v1)
+### Status
 
-- ✅ Client-side seed generation (Web Crypto + BIP39-compatible)
-- ✅ Local storage with optional password encryption
-- ✅ Clean, modern, privacy-focused UI
-- ✅ GitHub Pages ready
-- ⚠️ Full shielded sync & send requires integrating [WebZjs](https://github.com/ChainSafe/WebZjs) (planned for v1.1)
-- ⚠️ **Do not use with real funds yet** — this is a test version
+- ✅ Real BIP39 generation & validation
+- ✅ Backup verification quiz
+- ✅ Local encryption (PBKDF2 + AES-GCM)
+- ✅ Polished multi-view UX competing with mobile wallets
+- ✅ QR codes, tabs, settings
+- ⚠️ Full Orchard shielded sync & real transactions require [WebZjs](https://github.com/ChainSafe/WebZjs) integration (v1.2)
+- ⚠️ **Test version only** — do not use with real funds
 
 ## Quick Start
 
-1. Open `index.html` in a modern browser, or
-2. Serve locally: `python -m http.server` or any static server
-3. Deploy to GitHub Pages (Settings → Pages → main branch)
+1. Open `index.html` or serve statically
+2. Enable GitHub Pages (Settings → Pages → main / root) for live demo at `https://cypheranon-dev.github.io/Maskwallet/`
 
-## Design Principles (from ZODL)
+## Principles
 
-- **Privacy by design** — nothing leaves your device
-- **Self-custody** — only you hold the keys
-- **Shielded by default** (coming)
-- **Consent & clarity** — no dark patterns
-- **Open source** — audit everything
-
-## Roadmap
-
-- [ ] Integrate `@chainsafe/webzjs-wallet` for real Orchard sync
-- [ ] Unified Address display + QR
-- [ ] Send shielded ZEC
-- [ ] Hardware wallet support path
-- [ ] Tor / privacy routing options
+- Privacy by design
+- Self-custody only
+- Shielded by default (coming)
+- Open source, auditable
+- No analytics or third-party tracking
 
 ## License
 
@@ -49,4 +44,4 @@ MIT
 
 ---
 
-Built for financial sovereignty. Mask your Zcash.
+Mask your Zcash. Private by default. Provable by choice.
