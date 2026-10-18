@@ -1,22 +1,16 @@
 // Mask Wallet v1 — Client-side only
-// Seed generation uses Web Crypto. Full Zcash derivation pending WebZjs integration.
-
-const WORDLIST = [
-  "abandon","ability","able","about","above","absent","absorb","abstract","absurd","abuse",
-  "access","accident","account","accuse","achieve","acid","acoustic","acquire","across","act",
-  // ... truncated for brevity in this demo; real version should include full BIP39 wordlist
-  // For production test we generate and display a valid-looking phrase
-];
+// IMPORTANT: This v1 uses a simplified demo seed generator for the public test.
+// For real BIP39 + Zcash key derivation, integrate @scure/bip39 and @chainsafe/webzjs-wallet.
+// Never use the generated phrases with real funds.
 
 function generateSecureMnemonic() {
-  // In a real build, use full BIP39 (e.g. @scure/bip39) + Web Crypto entropy
-  // This demo generates a cryptographically random 24-word style phrase
+  // Demo: cryptographically shuffled fixed set to illustrate the UX flow.
+  // Production: use crypto.getRandomValues + full BIP39 wordlist + checksum.
   const words = [
-    "mask","privacy","shield","orchard","sovereign","zcash","wallet","secure",
-    "create","backup","verify","confirm","local","encrypt","keys","control",
-    "private","by","default","provable","choice","open","source","test"
+    "mask", "privacy", "shield", "orchard", "sovereign", "zcash", "wallet", "secure",
+    "create", "backup", "verify", "confirm", "local", "encrypt", "keys", "control",
+    "private", "by", "default", "provable", "choice", "open", "source", "test"
   ];
-  // Shuffle with crypto
   const arr = [...words];
   for (let i = arr.length - 1; i > 0; i--) {
     const j = crypto.getRandomValues(new Uint32Array(1))[0] % (i + 1);
@@ -47,33 +41,33 @@ document.getElementById("create-btn").addEventListener("click", () => {
 document.getElementById("copy-seed").addEventListener("click", () => {
   const m = sessionStorage.getItem("mask_mnemonic");
   navigator.clipboard.writeText(m);
-  alert("Seed copied. Store it safely offline.");
+  alert("Seed copied. Store it safely offline.\n\nThis is a test phrase — do not use with real funds.");
 });
 
 document.getElementById("confirm-backup").addEventListener("click", () => {
   const password = document.getElementById("password").value;
   const mnemonic = sessionStorage.getItem("mask_mnemonic");
   
-  // Simple local encryption demo (in production use proper AES-GCM + PBKDF2)
   if (password) {
     localStorage.setItem("mask_wallet_encrypted", btoa(mnemonic + ":" + password));
   } else {
     localStorage.setItem("mask_wallet", mnemonic);
   }
   
-  // Demo unified address
-  document.getElementById("address").textContent = "u1mask...demo...orchard...testnet";
+  document.getElementById("address").textContent = "u1mask...demo...orchard...testnet (v1)";
   showScreen("use-screen");
 });
 
 document.getElementById("logout").addEventListener("click", () => {
-  localStorage.clear();
-  sessionStorage.clear();
-  showScreen("create-screen");
+  if (confirm("Clear this local wallet? This cannot be undone.")) {
+    localStorage.clear();
+    sessionStorage.clear();
+    showScreen("create-screen");
+  }
 });
 
 // Restore if exists
 if (localStorage.getItem("mask_wallet") || localStorage.getItem("mask_wallet_encrypted")) {
-  document.getElementById("address").textContent = "u1mask...restored...demo";
+  document.getElementById("address").textContent = "u1mask...restored...demo (v1)";
   showScreen("use-screen");
 }
