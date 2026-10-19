@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mask Wallet — Private Zcash</title>
+  <title>Mask Wallet — Private Cypher</title>
   <link rel="manifest" href="/manifest.json" />
   <meta name="theme-color" content="#f0762a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -33,17 +33,17 @@
         <i class="fa-solid fa-mask text-2xl accent"></i>
         <h1 class="text-2xl font-bold">Mask</h1>
       </div>
-      <p class="text-xs text-gray-500 mt-1">Private Zcash • Inspired by ZODL</p>
+      <p class="text-xs text-gray-500 mt-1">Private Cypher Wallet • Inspired by ZODL</p>
     </header>
 
     <div class="bg-amber-900/40 border border-amber-700/50 rounded-lg p-3 mb-4 text-xs text-amber-200">
-      <i class="fa-solid fa-triangle-exclamation mr-1"></i> Test version. Do not use with real funds. WebZjs integration structured for full shielded sync.
+      <i class="fa-solid fa-triangle-exclamation mr-1"></i> Test version for Cypher. Do not use with real funds.
     </div>
 
     <div id="app" class="flex-1 flex flex-col">
       <div id="onboard" class="glass rounded-2xl p-6 flex-1 flex flex-col justify-center fade-in">
         <h2 class="text-xl font-semibold mb-2">Welcome to Mask</h2>
-        <p class="text-sm text-gray-400 mb-6">Self-custodial Zcash wallet. Your keys never leave this device.</p>
+        <p class="text-sm text-gray-400 mb-6">Self-custodial Cypher wallet. Your keys never leave this device.</p>
         <button id="create-new" class="btn-primary w-full py-3 rounded-xl font-semibold mb-3">Create New Wallet</button>
         <button id="restore" class="w-full py-3 rounded-xl border border-gray-700 font-medium hover:border-accent">Restore from Seed</button>
       </div>
@@ -75,18 +75,22 @@
             <span class="text-xs text-gray-500">Balance • Account <span id="account-num">1</span></span>
             <span id="sync-status" class="text-xs text-amber-400 syncing">Syncing...</span>
           </div>
-          <div class="text-3xl font-bold mb-1" id="balance">0.00 <span class="text-lg text-gray-400">ZEC</span></div>
+          <div class="text-3xl font-bold mb-1" id="balance">0.00 <span class="text-lg text-gray-400">CYP</span></div>
           <div class="text-sm text-gray-500" id="usd">≈ $0.00 USD</div>
           <div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="progress-bar" class="progress h-full w-0"></div></div>
         </div>
 
         <div class="glass rounded-xl p-4 mb-4">
           <div class="flex justify-between items-center mb-2">
-            <span class="text-xs text-gray-500">Unified Address</span>
+            <span class="text-xs text-gray-500">Cypher Address</span>
             <button id="copy-addr" class="text-xs accent">Copy</button>
           </div>
           <p id="ua" class="text-xs font-mono break-all text-gray-300"></p>
           <div id="qr" class="flex justify-center mt-3"></div>
+        </div>
+
+        <div class="flex gap-2 mb-4">
+          <a href="https://cypheranon-dev.github.io/Maskswap/" target="_blank" class="flex-1 text-center py-2.5 rounded-lg border border-gray-700 text-sm hover:border-accent">Open Mask Swap</a>
         </div>
 
         <div class="flex border-b border-gray-800 mb-3 text-sm">
@@ -98,18 +102,18 @@
 
         <div id="tab-content" class="flex-1 overflow-auto">
           <div id="send" class="hidden">
-            <input id="send-to" placeholder="Recipient unified address" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-2 outline-none focus:border-accent" />
-            <input id="send-amt" type="number" step="0.0001" placeholder="Amount ZEC" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-2 outline-none focus:border-accent" />
+            <input id="send-to" placeholder="Recipient Cypher address" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-2 outline-none focus:border-accent" />
+            <input id="send-amt" type="number" step="0.0001" placeholder="Amount CYP" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-2 outline-none focus:border-accent" />
             <input id="send-memo" placeholder="Memo (optional, private)" class="w-full bg-black/50 border border-gray-700 rounded-lg px-3 py-2.5 text-sm mb-3 outline-none focus:border-accent" />
             <button id="do-send" class="btn-primary w-full py-3 rounded-xl font-semibold">Review & Send</button>
           </div>
           <div id="receive">
-            <p class="text-sm text-gray-400 mb-3">Share this address to receive private ZEC.</p>
+            <p class="text-sm text-gray-400 mb-3">Share this address to receive private Cypher (CYP).</p>
             <button id="new-addr" class="w-full py-2 rounded-lg border border-gray-700 text-sm mb-2">Generate New Receiving Address</button>
             <p class="text-xs text-center text-gray-600">Diversifier index for better privacy</p>
           </div>
           <div id="history" class="hidden text-sm">
-            <p class="text-gray-500 text-center py-6">No transactions yet. Full history after WebZjs sync.</p>
+            <p class="text-gray-500 text-center py-6">No transactions yet.</p>
           </div>
           <div id="settings" class="hidden space-y-3 text-sm">
             <button id="switch-account" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Switch / New Account</button>
@@ -121,7 +125,7 @@
             </div>
             <button id="hw-wallet" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Connect Hardware Wallet</button>
             <button id="clear-wallet" class="w-full py-2.5 rounded-lg border border-red-800 text-red-400 text-left px-3">Clear Wallet from Device</button>
-            <div class="text-xs text-gray-600 pt-2">Mask Wallet v1.2 • WebZjs-ready • Test mode</div>
+            <div class="text-xs text-gray-600 pt-2">Mask Wallet • Cypher demo • Linked to Mask Swap</div>
           </div>
         </div>
       </div>
@@ -129,7 +133,7 @@
 
     <footer class="text-center text-[10px] text-gray-600 mt-4">
       Open source • Self-custody • No analytics<br>
-      <a href="https://github.com/Cypheranon-dev/Maskwallet" class="accent">GitHub</a>
+      <a href="https://github.com/Cypheranon-dev/Maskwallet" class="accent">GitHub</a> • <a href="https://github.com/Cypheranon-dev/Maskswap" class="accent">Mask Swap</a>
     </footer>
   </div>
 
