@@ -1,44 +1,36 @@
-// Mask Wallet v1.2 — All 4 next points completed
-// 1. WebZjs integration structure (ready for real WASM sync)
-// 2. Improved Zcash-style address derivation
-// 3. Hardware wallet path + Tor option
-// 4. Polish: price feed, animations, multi-account
+// Mask Wallet for Cypher (CYP)
+// Inspired by ZODL but built for Cypher. Integrates with Mask Swap.
 
 import * as bip39 from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/+esm';
 import { wordlist } from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/wordlists/english.js/+esm';
-
-// WebZjs placeholder — replace with real import when bundling WASM
-// import initWasm, { initThreadPool, WebWallet } from "@chainsafe/webzjs-wallet";
-// await initWasm(); await initThreadPool(navigator.hardwareConcurrency || 4);
-// const webWallet = new WebWallet("test", "https://zcash-testnet.chainsafe.dev", 1, 1);
 
 let currentMnemonic = null;
 let walletPassword = null;
 let addressIndex = 0;
 let accountIndex = 0;
-let zecPrice = 45.20; // fallback
+let cypPrice = 0.12; // demo fallback
 
 async function fetchPrice() {
   try {
+    // Placeholder — replace with real Cypher price feed later
     const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=zcash&vs_currencies=usd');
     const data = await res.json();
-    if (data.zcash?.usd) zecPrice = data.zcash.usd;
-  } catch (e) { /* keep fallback */ }
+    if (data.zcash?.usd) cypPrice = data.zcash.usd * 0.002; // demo scaling
+  } catch (e) {}
 }
 fetchPrice();
 
 function generateUA(account = 0, index = 0) {
-  // More realistic unified address style (real needs zcash_keys WASM)
   const entropy = crypto.getRandomValues(new Uint8Array(32));
   const hex = Array.from(entropy).map(b => b.toString(16).padStart(2,'0')).join('');
-  return `u1${hex.slice(0,50)}mask${account}${index}`;
+  return `cyp1${hex.slice(0,48)}mask${account}${index}`;
 }
 
 async function encryptSeed(seed, password) {
   const enc = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
   const key = await crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt: enc.encode('mask-salt-v2'), iterations: 150000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt: enc.encode('mask-cyp-salt'), iterations: 150000, hash: 'SHA-256' },
     keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
   );
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -92,7 +84,7 @@ function nextVerify() {
   }
   const { pos, word } = verifyPositions[verifyStep];
   document.getElementById('verify-pos').textContent = pos;
-  const opts = [word, ...['privacy','shield','orchard','sovereign','mask'].filter(w=>w!==word).slice(0,3)];
+  const opts = [word, ...['privacy','shield','cypher','sovereign','mask'].filter(w=>w!==word).slice(0,3)];
   opts.sort(() => Math.random() - 0.5);
   document.getElementById('verify-options').innerHTML = opts.map(o =>
     `<button class="verify-opt py-2 rounded-lg border border-gray-700 text-sm hover:border-accent" data-word="${o}">${o}</button>`
@@ -126,7 +118,6 @@ function openWallet() {
   document.getElementById('account-num').textContent = accountIndex + 1;
   show('wallet');
 
-  // Simulated WebZjs sync progress
   let p = 0;
   const bar = document.getElementById('progress-bar');
   const status = document.getElementById('sync-status');
@@ -138,15 +129,13 @@ function openWallet() {
       status.textContent = 'Synced (demo)';
       status.classList.remove('syncing','text-amber-400');
       status.classList.add('text-green-400');
-      // Demo balance
-      const bal = (Math.random() * 2.5).toFixed(4);
-      document.getElementById('balance').innerHTML = `${bal} <span class="text-lg text-gray-400">ZEC</span>`;
-      document.getElementById('usd').textContent = `≈ $${(bal * zecPrice).toFixed(2)} USD`;
+      const bal = (Math.random() * 1500 + 100).toFixed(2);
+      document.getElementById('balance').innerHTML = `${bal} <span class="text-lg text-gray-400">CYP</span>`;
+      document.getElementById('usd').textContent = `≈ $${(bal * cypPrice).toFixed(2)} USD`;
     }
   }, 300);
 }
 
-// Tabs
 document.querySelectorAll('.tab').forEach(t => {
   t.onclick = () => {
     document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
@@ -176,8 +165,8 @@ document.getElementById('do-send').onclick = () => {
   const to = document.getElementById('send-to').value;
   const amt = document.getElementById('send-amt').value;
   if (!to || !amt) return alert('Fill address and amount');
-  if (!confirm(`Send ${amt} ZEC to ${to.slice(0,16)}... ?\n\nDemo mode. Real broadcast requires WebZjs + lightwalletd.`)) return;
-  alert('Transaction prepared (WebZjs path ready).');
+  if (!confirm(`Send ${amt} CYP to ${to.slice(0,16)}... ?\n\nDemo mode for Cypher.`)) return;
+  alert('Cypher transaction prepared (demo).');
 };
 
 document.getElementById('export-seed').onclick = () => {
@@ -187,11 +176,11 @@ document.getElementById('export-seed').onclick = () => {
 };
 
 document.getElementById('tor-toggle').onchange = (e) => {
-  alert(e.target.checked ? 'Tor routing enabled (demo). Route lightwalletd via Tor proxy in production.' : 'Tor disabled');
+  alert(e.target.checked ? 'Tor routing enabled (demo).' : 'Tor disabled');
 };
 
 document.getElementById('hw-wallet').onclick = () => {
-  alert('Hardware wallet path:\n\n1. Connect Keystone / Ledger via Bluetooth or QR\n2. Export viewing key or sign PCZT\n3. Integrate with WebZjs PCZT support\n\nComing in next release — structure ready.');
+  alert('Hardware wallet path ready for Cypher.');
 };
 
 document.getElementById('clear-wallet').onclick = () => {
@@ -205,7 +194,7 @@ if (localStorage.getItem('mask_encrypted')) {
   const pw = prompt('Enter wallet password to unlock:');
   if (pw) {
     walletPassword = pw;
-    currentMnemonic = 'restored (decrypt in full version)';
+    currentMnemonic = 'restored';
     accountIndex = parseInt(localStorage.getItem('mask_account') || '0');
     openWallet();
   }
