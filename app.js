@@ -8,17 +8,7 @@ let currentMnemonic = null;
 let walletPassword = null;
 let addressIndex = 0;
 let accountIndex = 0;
-let cypPrice = 0.12; // demo fallback
-
-async function fetchPrice() {
-  try {
-    // Placeholder — replace with real Cypher price feed later
-    const res = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=zcash&vs_currencies=usd');
-    const data = await res.json();
-    if (data.zcash?.usd) cypPrice = data.zcash.usd * 0.002; // demo scaling
-  } catch (e) {}
-}
-fetchPrice();
+let cypPrice = 0.025; // Cypher TGE launch price
 
 function generateUA(account = 0, index = 0) {
   const entropy = crypto.getRandomValues(new Uint8Array(32));
