@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Mask Wallet — Private Cypher</title>
   <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAABdygAwAEAAAAAQAABd4AAAAA" />
   <meta name="theme-color" content="#f0762a" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -24,13 +25,14 @@
     .syncing { animation: pulse 1.5s infinite; }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
     .fade-in { animation: fadeIn 0.4s ease-out; }
+    .logo { width: 36px; height: 36px; border-radius: 50%; }
   </style>
 </head>
 <body class="min-h-screen antialiased">
   <div class="max-w-md mx-auto px-4 py-6 min-h-screen flex flex-col">
     <header class="text-center mb-6">
       <div class="inline-flex items-center gap-2">
-        <i class="fa-solid fa-mask text-2xl accent"></i>
+        <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAASABIAAD/4QCMRXhpZgAATU0AKgAAAAgABQESAAMAAAABAAEAAAEaAAUAAAABAAAASgEbAAUAAAABAAAAUgEoAAMAAAABAAIAAIdpAAQAAAABAAAAWgAAAAAAAABIAAAAAQAAAEgAAAABAAOgAQADAAAAAQABAACgAgAEAAAAAQAABdygAwAEAAAAAQAABd4AAAAA" alt="Cypher" class="logo" />
         <h1 class="text-2xl font-bold">Mask</h1>
       </div>
       <p class="text-xs text-gray-500 mt-1">Private Cypher Wallet • Inspired by ZODL</p>
