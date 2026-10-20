@@ -1,5 +1,6 @@
 // Mask Wallet for Cypher (CYP)
 // Inspired by ZODL but built for Cypher. Integrates with Mask Swap.
+// New wallets receive 1000 CYP bonus. CYP price $0.25.
 
 import * as bip39 from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/+esm';
 import { wordlist } from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/wordlists/english.js/+esm';
@@ -8,7 +9,8 @@ let currentMnemonic = null;
 let walletPassword = null;
 let addressIndex = 0;
 let accountIndex = 0;
-let cypPrice = 0.025; // Cypher TGE launch price
+let cypPrice = 0.25; // each CYP costs $0.25
+let isNewWallet = false;
 
 function generateUA(account = 0, index = 0) {
   const entropy = crypto.getRandomValues(new Uint8Array(32));
@@ -43,6 +45,7 @@ function renderSeed(mnemonic) {
 document.getElementById('create-new').onclick = async () => {
   currentMnemonic = bip39.generateMnemonic(wordlist, 256);
   if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return alert('Generation failed');
+  isNewWallet = true;
   renderSeed(currentMnemonic);
   show('seed-screen');
 };
@@ -53,6 +56,7 @@ document.getElementById('restore').onclick = () => {
   const cleaned = phrase.trim().toLowerCase().replace(/\s+/g, ' ');
   if (!bip39.validateMnemonic(cleaned, wordlist)) return alert('Invalid seed phrase');
   currentMnemonic = cleaned;
+  isNewWallet = false;
   show('password-screen');
 };
 
@@ -119,9 +123,15 @@ function openWallet() {
       status.textContent = 'Synced (demo)';
       status.classList.remove('syncing','text-amber-400');
       status.classList.add('text-green-400');
-      const bal = (Math.random() * 1500 + 100).toFixed(2);
+      // New wallets get 1000 CYP bonus + small random; restored get smaller demo balance
+      const bonus = isNewWallet ? 1000 : 0;
+      const bal = (bonus + (Math.random() * 50)).toFixed(2);
       document.getElementById('balance').innerHTML = `${bal} <span class="text-lg text-gray-400">CYP</span>`;
       document.getElementById('usd').textContent = `≈ $${(bal * cypPrice).toFixed(2)} USD`;
+      if (isNewWallet) {
+        alert('Welcome! Your new wallet received a 1000 CYP bonus.');
+        isNewWallet = false;
+      }
     }
   }, 300);
 }
@@ -159,22 +169,28 @@ document.getElementById('do-send').onclick = () => {
   alert('Cypher transaction prepared (demo).');
 };
 
+// Improved paper backup
 document.getElementById('export-seed').onclick = () => {
-  const pw = prompt('Enter password to reveal seed:');
-  if (pw === walletPassword) alert(currentMnemonic);
-  else alert('Wrong password');
+  const pw = prompt('Enter password to reveal seed for paper backup:');
+  if (pw === walletPassword) {
+    alert('PAPER BACKUP\n\nWrite these 24 words on paper and store safely offline:\n\n' + currentMnemonic + '\n\nNever share digitally.');
+  } else alert('Wrong password');
 };
 
 document.getElementById('tor-toggle').onchange = (e) => {
   alert(e.target.checked ? 'Tor routing enabled (demo).' : 'Tor disabled');
 };
 
+// Improved hardware wallet option
 document.getElementById('hw-wallet').onclick = () => {
-  alert('Hardware wallet path ready for Cypher.');
+  const choice = prompt('Hardware Wallet Options:\n1. Connect Keystone (QR)\n2. Connect Ledger (Bluetooth)\n3. Learn more\n\nEnter 1, 2, or 3:');
+  if (choice === '1') alert('Keystone flow: Scan QR to export viewing key or sign PCZT. Structure ready for Cypher.');
+  else if (choice === '2') alert('Ledger flow: Pair via Bluetooth, select account, sign on device. Structure ready.');
+  else alert('Hardware wallets (Keystone / Ledger) supported in path. Your seed never leaves the device.');
 };
 
 document.getElementById('clear-wallet').onclick = () => {
-  if (confirm('Erase wallet from this device? Seed must be backed up.')) {
+  if (confirm('Erase wallet from this device? Seed must be backed up on paper.')) {
     localStorage.clear();
     location.reload();
   }
@@ -184,8 +200,9 @@ if (localStorage.getItem('mask_encrypted')) {
   const pw = prompt('Enter wallet password to unlock:');
   if (pw) {
     walletPassword = pw;
-    currentMnemonic = 'restored';
+    currentMnemonic = 'restored-seed-placeholder';
     accountIndex = parseInt(localStorage.getItem('mask_account') || '0');
+    isNewWallet = false;
     openWallet();
   }
 }
