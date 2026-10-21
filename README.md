@@ -2,7 +2,7 @@
 
 **Privacy-first self-custodial Cypher wallet for the browser.**
 
-Inspired by [ZODL](https://zodl.com) but built for the Cypher project. Self-custody, private by design, works together with [Mask Swap](https://github.com/Cypheranon-dev/Maskswap).
+Zodl-inspired Cypher wallet with Zcash integrated. Self-custody, private by design, works together with [Mask Swap](https://github.com/Cypheranon-dev/Maskswap).
 
 ## Features
 
@@ -10,6 +10,7 @@ Inspired by [ZODL](https://zodl.com) but built for the Cypher project. Self-cust
 - Local password encryption (AES-GCM)
 - Dashboard showing **CYP** balances (+1000 CYP bonus on new wallets)
 - Send / Receive Cypher tokens
+- Zcash (ZEC) support integrated
 - Direct link to Mask Swap for private swaps (ETH, BTC, SOL, ZEC ↔ Cypher)
 - Black + orange Cypher theme
 - PWA ready, GitHub Pages deployable
