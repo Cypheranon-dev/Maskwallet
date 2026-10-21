@@ -1,8 +1,16 @@
 # Mask Wallet
 
-**Privacy-first self-custodial Cypher wallet for the browser.**
+**Foundational self-custodial wallet for the Cypher protocol.**
 
-Zodl-inspired Cypher wallet with Zcash integrated. Self-custody, private by design, works together with [Mask Swap](https://github.com/Cypheranon-dev/Maskswap).
+Zodl-inspired Cypher wallet with Zcash integrated. Built as the user-facing layer of the Cypher CIP vision: privacy by default, post-quantum ready, and solving the memory and performance problems of current shielded systems (including Equihash 48,5 constraints).
+
+## Vision alignment
+
+- Client-side seed generation and AES-GCM encryption (no trusted setup)
+- Path to zk-STARK ring signatures for memory-efficient shielded transactions
+- Zcash compatibility while upgrading the underlying proof system
+- Foundation for GPU-first decentralized mining and finite emission models
+- Direct integration with Mask Swap for private asset movement
 
 ## Features
 
@@ -18,8 +26,6 @@ Zodl-inspired Cypher wallet with Zcash integrated. Self-custody, private by desi
 
 ## Live
 
-Enable GitHub Pages (Settings → Pages → main / root):
-
 - Wallet: `https://cypheranon-dev.github.io/Maskwallet/`
 - Swap: `https://cypheranon-dev.github.io/Maskswap/`
 
@@ -27,13 +33,9 @@ Enable GitHub Pages (Settings → Pages → main / root):
 
 See [SECURITY.md](SECURITY.md). All encryption is client-side. No secrets in the repository.
 
-## Integration
-
-From the wallet dashboard you can open Mask Swap. Both apps are standalone but share theme and privacy goals.
-
 ## Status
 
-Test / demo version. Real Cypher protocol integration (zk-STARKs, private swaps) is the next engineering step.
+Active development toward full Cypher protocol integration (zk-STARKs, optimized Equihash, private swaps). This wallet is the reference client path.
 
 ## License
 
@@ -41,4 +43,4 @@ MIT
 
 ---
 
-Mask your Cypher. Private by default.
+Mask your Cypher. Private by default. Provable by choice.
