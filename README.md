@@ -1,6 +1,6 @@
 # Mask Wallet
 
-**Foundational self-custodial wallet for the Cypher protocol.**
+**Foundational self-custodial Cypher wallet for the Cypher protocol.**
 
 Zodl-inspired Cypher wallet with Zcash integrated. Built as the user-facing layer of the Cypher CIP vision: privacy by default, post-quantum ready, and solving the memory and performance problems of current shielded systems (including Equihash 48,5 constraints).
 
