@@ -1,7 +1,7 @@
 {
   "name": "Mask Wallet",
   "short_name": "Mask",
-  "description": "Privacy-first self-custodial Zcash wallet. Inspired by ZODL.",
+  "description": "Privacy-first self-custodial Cypher wallet. Zodl-inspired with Zcash integrated.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
