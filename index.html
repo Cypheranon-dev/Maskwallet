@@ -89,7 +89,7 @@
         <!-- Candlestick Chart -->
         <div class="glass rounded-xl p-4 mb-4">
           <div class="flex justify-between items-center mb-2">
-            <span class="text-xs text-gray-500">CYP Price Chart</span>
+            <span class="text-xs text-gray-500">CYP Price Chart <span class="text-[10px]" id="chart-status">(demo)</span></span>
           </div>
           <div id="candle-chart"></div>
         </div>
@@ -158,7 +158,6 @@
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
 
-    // Candlestick chart for CYP (shown when wallet is visible)
     function initCandleChart() {
       const container = document.getElementById('candle-chart');
       if (!container || container.dataset.init) return;
@@ -199,9 +198,9 @@
 
       candleSeries.setData(generateCandles(0.25));
       chart.timeScale().fitContent();
+      document.getElementById('chart-status').textContent = '(demo — CYP not listed yet)';
     }
 
-    // Observe when wallet becomes visible
     const walletEl = document.getElementById('wallet');
     const observer = new MutationObserver(() => {
       if (!walletEl.classList.contains('hidden')) {
