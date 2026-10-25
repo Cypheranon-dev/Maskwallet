@@ -1,6 +1,6 @@
 // Mask Wallet for Cypher (CYP)
 // Inspired by ZODL but built for Cypher. Integrates with Mask Swap.
-// New wallets receive 1000 CYP bonus. CYP price $0.25.
+// New wallets receive 1000 CYP bonus. Each CYP costs $0.25.
 
 import * as bip39 from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/+esm';
 import { wordlist } from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/wordlists/english.js/+esm';
@@ -123,11 +123,11 @@ function openWallet() {
       status.textContent = 'Synced (demo)';
       status.classList.remove('syncing','text-amber-400');
       status.classList.add('text-green-400');
-      // New wallets get 1000 CYP bonus + small random; restored get smaller demo balance
+      // New wallets get 1000 CYP bonus
       const bonus = isNewWallet ? 1000 : 0;
       const bal = (bonus + (Math.random() * 50)).toFixed(2);
       document.getElementById('balance').innerHTML = `${bal} <span class="text-lg text-gray-400">CYP</span>`;
-      document.getElementById('usd').textContent = `≈ $${(bal * cypPrice).toFixed(2)} USD`;
+      document.getElementById('usd').textContent = `\u2248 $${(bal * cypPrice).toFixed(2)} USD`;
       if (isNewWallet) {
         alert('Welcome! Your new wallet received a 1000 CYP bonus.');
         isNewWallet = false;
@@ -169,11 +169,17 @@ document.getElementById('do-send').onclick = () => {
   alert('Cypher transaction prepared (demo).');
 };
 
-// Improved paper backup
+// Paper backup
 document.getElementById('export-seed').onclick = () => {
   const pw = prompt('Enter password to reveal seed for paper backup:');
-  if (pw === walletPassword) {
-    alert('PAPER BACKUP\n\nWrite these 24 words on paper and store safely offline:\n\n' + currentMnemonic + '\n\nNever share digitally.');
+  if (pw === walletPassword && currentMnemonic && currentMnemonic !== 'restored-seed-placeholder') {
+    const text = 'MASK WALLET PAPER BACKUP\n\nWrite these 24 words on paper in order.\nStore offline in a safe place.\nNever share digitally or take a photo.\n\n' + currentMnemonic.split(' ').map((w,i) => (i+1) + '. ' + w).join('\n');
+    alert(text);
+    if (confirm('Copy seed phrase to clipboard for manual writing? (recommended to write by hand)')) {
+      navigator.clipboard.writeText(currentMnemonic);
+    }
+  } else if (pw === walletPassword) {
+    alert('Seed is locked. For full paper backup, restore from original seed or create a new wallet.');
   } else alert('Wrong password');
 };
 
@@ -181,16 +187,16 @@ document.getElementById('tor-toggle').onchange = (e) => {
   alert(e.target.checked ? 'Tor routing enabled (demo).' : 'Tor disabled');
 };
 
-// Improved hardware wallet option
+// Hardware wallet
 document.getElementById('hw-wallet').onclick = () => {
-  const choice = prompt('Hardware Wallet Options:\n1. Connect Keystone (QR)\n2. Connect Ledger (Bluetooth)\n3. Learn more\n\nEnter 1, 2, or 3:');
-  if (choice === '1') alert('Keystone flow: Scan QR to export viewing key or sign PCZT. Structure ready for Cypher.');
-  else if (choice === '2') alert('Ledger flow: Pair via Bluetooth, select account, sign on device. Structure ready.');
-  else alert('Hardware wallets (Keystone / Ledger) supported in path. Your seed never leaves the device.');
+  const choice = prompt('Add / Connect Hardware Wallet:\n\n1. Keystone (QR air-gapped)\n2. Ledger (Bluetooth)\n3. Other / Learn more\n\nEnter 1, 2, or 3:');
+  if (choice === '1') alert('Keystone:\n1. Open Keystone and select Cypher/Zcash account.\n2. Show QR of viewing key or address.\n3. Scan in Mask Wallet (coming soon).\nYour seed never leaves the device.');
+  else if (choice === '2') alert('Ledger:\n1. Install Cypher/Zcash app on Ledger.\n2. Pair via Bluetooth.\n3. Select account and sign on device.\nStructure ready for Cypher.');
+  else alert('Hardware wallets keep your seed offline.\nSupported path: Keystone (QR) and Ledger.\nUse paper backup as well.');
 };
 
 document.getElementById('clear-wallet').onclick = () => {
-  if (confirm('Erase wallet from this device? Seed must be backed up on paper.')) {
+  if (confirm('Erase wallet from this device? Make sure you have a paper backup of the seed.')) {
     localStorage.clear();
     location.reload();
   }
