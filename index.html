@@ -43,13 +43,13 @@
         </svg>
         <h1 class="text-2xl font-bold">Mask</h1>
       </div>
-      <p class="text-xs text-gray-500 mt-1">Cypher wallet • Zodl-inspired • Zcash integrated</p>
+      <p class="text-xs text-gray-500 mt-1">Cypher wallet • Zodl-inspired • Private by design</p>
     </header>
 
     <div id="app" class="flex-1 flex flex-col">
       <div id="onboard" class="glass rounded-2xl p-6 flex-1 flex flex-col justify-center fade-in">
         <h2 class="text-xl font-semibold mb-2">Welcome to Mask</h2>
-        <p class="text-sm text-gray-400 mb-6">Self-custodial Cypher wallet with Zcash support. Building the foundation for post-quantum private transactions.</p>
+        <p class="text-sm text-gray-400 mb-6">Self-custodial Cypher wallet. New wallets receive 1000 CYP. Building the foundation for post-quantum private transactions.</p>
         <button id="create-new" class="btn-primary w-full py-3 rounded-xl font-semibold mb-3">Create New Wallet</button>
         <button id="restore" class="w-full py-3 rounded-xl border border-gray-700 font-medium hover:border-accent">Restore from Seed</button>
       </div>
@@ -82,14 +82,14 @@
             <span id="sync-status" class="text-xs text-amber-400 syncing">Syncing...</span>
           </div>
           <div class="text-3xl font-bold mb-1" id="balance">0.00 <span class="text-lg text-gray-400">CYP</span></div>
-          <div class="text-sm text-gray-500" id="usd">≈ $0.00 USD • Fair value $0.25</div>
+          <div class="text-sm text-gray-500" id="usd">≈ $0.00 USD • $0.25 per CYP</div>
           <div class="mt-3 h-1 bg-gray-800 rounded-full overflow-hidden"><div id="progress-bar" class="progress h-full w-0"></div></div>
         </div>
 
         <!-- Candlestick Chart -->
         <div class="glass rounded-xl p-4 mb-4">
           <div class="flex justify-between items-center mb-2">
-            <span class="text-xs text-gray-500">CYP Price Chart <span class="text-[10px]" id="chart-status">(fair $0.25)</span></span>
+            <span class="text-xs text-gray-500">CYP Price Chart <span class="text-[10px]" id="chart-status">(loading...)</span></span>
           </div>
           <div id="candle-chart"></div>
         </div>
@@ -147,7 +147,7 @@
     </div>
 
     <footer class="text-center text-[10px] text-gray-600 mt-4">
-      Cypher protocol foundation • Self-custody • Seed $0.0025 • Fair value $0.25<br>
+      Cypher protocol foundation • Self-custody • Each CYP $0.25 • New wallets +1000 CYP<br>
       <a href="https://github.com/Cypheranon-dev/Maskwallet" class="accent">GitHub</a> • <a href="https://github.com/Cypheranon-dev/Maskswap" class="accent">Mask Swap</a> • <a href="https://github.com/Cypheranon-dev/ShieldLend" class="accent">ShieldLend</a>
     </footer>
   </div>
@@ -158,27 +158,26 @@
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
 
+    function generateCypCandles(count = 36) {
+      const data = [];
+      let time = Math.floor(Date.now() / 1000) - count * 3600;
+      let price = 0.25;
+      for (let i = 0; i < count; i++) {
+        const open = price;
+        const close = +(open * (1 + (Math.random() - 0.5) * 0.03)).toFixed(6);
+        const high = +(Math.max(open, close) * (1 + Math.random() * 0.015)).toFixed(6);
+        const low = +(Math.min(open, close) * (1 - Math.random() * 0.015)).toFixed(6);
+        data.push({ time, open, high, low, close });
+        price = close;
+        time += 3600;
+      }
+      return data;
+    }
+
     function initCandleChart() {
       const container = document.getElementById('candle-chart');
       if (!container || container.dataset.init) return;
       container.dataset.init = '1';
-
-      function generateCypCandles(count = 36) {
-        const data = [];
-        let time = Math.floor(Date.now() / 1000) - count * 3600;
-        let price = 0.0025;
-        for (let i = 0; i < count; i++) {
-          const target = 0.0025 + (0.25 - 0.0025) * (i / (count - 1));
-          const open = price;
-          const close = +(target * (1 + (Math.random() - 0.5) * 0.04)).toFixed(6);
-          const high = +(Math.max(open, close) * (1 + Math.random() * 0.02)).toFixed(6);
-          const low = +(Math.min(open, close) * (1 - Math.random() * 0.02)).toFixed(6);
-          data.push({ time, open, high, low, close });
-          price = close;
-          time += 3600;
-        }
-        return data;
-      }
 
       const chart = LightweightCharts.createChart(container, {
         height: 180,
@@ -199,7 +198,7 @@
 
       candleSeries.setData(generateCypCandles());
       chart.timeScale().fitContent();
-      document.getElementById('chart-status').textContent = '(fair $0.25 • seed $0.0025)';
+      document.getElementById('chart-status').textContent = '($0.25)';
     }
 
     const walletEl = document.getElementById('wallet');
