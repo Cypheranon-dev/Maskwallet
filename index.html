@@ -86,6 +86,14 @@
 
         <div class="glass rounded-xl p-4 mb-4">
           <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-gray-500">Market Prices</span>
+            <span class="text-[10px] text-gray-500" id="price-status">loading...</span>
+          </div>
+          <div id="price-list" class="grid grid-cols-2 gap-1 text-xs"></div>
+        </div>
+
+        <div class="glass rounded-xl p-4 mb-4">
+          <div class="flex justify-between items-center mb-2">
             <span class="text-xs text-gray-500">Cypher Address</span>
             <button id="copy-addr" class="text-xs accent">Copy</button>
           </div>
@@ -147,6 +155,43 @@
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(console.error);
     }
+
+    let prices = { CYP: 0.25, ETH: 2500, BTC: 65000, SOL: 150 };
+    const cgIds = { ETH: 'ethereum', BTC: 'bitcoin', SOL: 'solana' };
+
+    function renderPrices() {
+      const el = document.getElementById('price-list');
+      if (!el) return;
+      el.innerHTML = Object.entries(prices).map(([k, v]) =>
+        `<div class="flex justify-between"><span>${k}</span><span class="accent">$${Number(v).toLocaleString(undefined, {maximumFractionDigits: k === 'CYP' ? 4 : 0})}</span></div>`
+      ).join('');
+    }
+
+    async function fetchPrices() {
+      const status = document.getElementById('price-status');
+      try {
+        status.textContent = 'loading...';
+        const ids = Object.values(cgIds).join(',');
+        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
+        if (!res.ok) throw new Error();
+        const data = await res.json();
+        if (data.ethereum?.usd) prices.ETH = data.ethereum.usd;
+        if (data.bitcoin?.usd) prices.BTC = data.bitcoin.usd;
+        if (data.solana?.usd) prices.SOL = data.solana.usd;
+        status.textContent = 'live';
+      } catch (e) {
+        status.textContent = 'demo';
+      }
+      renderPrices();
+    }
+
+    const walletEl = document.getElementById('wallet');
+    const observer = new MutationObserver(() => {
+      if (!walletEl.classList.contains('hidden')) {
+        fetchPrices();
+      }
+    });
+    observer.observe(walletEl, { attributes: true, attributeFilter: ['class'] });
   </script>
 </body>
 </html>
