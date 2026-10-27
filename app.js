@@ -147,6 +147,12 @@ function openWallet() {
   localStorage.setItem('mask_account', accountIndex);
 }
 
+const copySeed = document.getElementById('copy-seed');
+if (copySeed) copySeed.onclick = () => {
+  if (!currentMnemonic) return toast('No seed to copy');
+  navigator.clipboard.writeText(currentMnemonic).then(() => toast('Seed phrase copied'));
+};
+
 const copyBtn = document.getElementById('copy-addr');
 if (copyBtn) copyBtn.onclick = () => {
   navigator.clipboard.writeText(document.getElementById('ua').textContent).then(() => toast('Copied'));
