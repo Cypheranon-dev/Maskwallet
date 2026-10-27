@@ -188,14 +188,27 @@ if (newAddr) newAddr.onclick = () => {
 
 const switchAcct = document.getElementById('switch-account');
 if (switchAcct) switchAcct.onclick = async () => {
-  currentMnemonic = bip39.generateMnemonic(wordlist, 256);
-  if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return toast('Generation failed');
+  const choice = prompt('Add wallet:\n1 = Create new random seed\n2 = Import existing seed\n\nEnter 1 or 2:');
+  if (!choice) return;
   accountIndex = wallets.length;
   addressIndex = 0;
-  isNewWallet = true;
-  renderSeed(currentMnemonic);
-  show('seed-screen');
-  toast('New random seed generated');
+  if (choice.trim() === '2') {
+    const phrase = prompt('Paste seed phrase (12/15/18/21/24 words):');
+    if (!phrase) return;
+    const cleaned = phrase.trim().toLowerCase().replace(/\s+/g, ' ');
+    if (!bip39.validateMnemonic(cleaned, wordlist)) return toast('Invalid seed phrase');
+    currentMnemonic = cleaned;
+    isNewWallet = false;
+    openWallet();
+    toast('Imported into ' + walletLabel(accountIndex));
+  } else {
+    currentMnemonic = bip39.generateMnemonic(wordlist, seedBits);
+    if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return toast('Generation failed');
+    isNewWallet = true;
+    renderSeed(currentMnemonic);
+    show('seed-screen');
+    toast('New random seed for ' + walletLabel(accountIndex));
+  }
 };
 
 const exportSeed = document.getElementById('export-seed');
