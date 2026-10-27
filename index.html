@@ -71,9 +71,12 @@
       <div class="text-xs tracking-widest text-gray-500 mb-1">CYPHER NETWORK</div>
       <h1 class="text-2xl font-semibold mb-2">Mask Wallet</h1>
       <p class="text-sm text-gray-500 mb-8 max-w-xs">Your keys and your activity stay on this device. Nothing is sent anywhere unless you choose to send it.</p>
-      <div class="flex gap-2 mb-3 text-xs">
-        <button id="len-12" class="pill flex-1 py-2 rounded-lg">12 words</button>
-        <button id="len-24" class="pill flex-1 py-2 rounded-lg accent border border-[#f0762a]">24 words</button>
+      <div class="flex gap-1 mb-3 text-[10px]">
+        <button data-bits="128" class="len-btn pill flex-1 py-2 rounded-lg">12</button>
+        <button data-bits="160" class="len-btn pill flex-1 py-2 rounded-lg">15</button>
+        <button data-bits="192" class="len-btn pill flex-1 py-2 rounded-lg">18</button>
+        <button data-bits="224" class="len-btn pill flex-1 py-2 rounded-lg">21</button>
+        <button data-bits="256" class="len-btn pill flex-1 py-2 rounded-lg accent border border-[#f0762a]">24</button>
       </div>
       <button id="create-new" class="btn w-full py-4 rounded-2xl mb-3">Create new wallet</button>
       <button id="restore" class="w-full py-4 rounded-2xl border border-gray-800 text-sm">Restore from recovery phrase</button>
