@@ -137,6 +137,8 @@ function openWallet() {
   if (window.setBalanceDisplay) window.setBalanceDisplay(bal);
   const asset = document.getElementById('asset-cyp');
   if (asset) asset.textContent = bal;
+  const usd = document.getElementById('asset-cyp-usd');
+  if (usd) usd.textContent = '$' + (parseFloat(bal) * cypPrice).toFixed(2);
   if (isNewWallet) {
     toast('Wallet created · 1,000 CYP');
     isNewWallet = false;
