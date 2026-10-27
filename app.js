@@ -143,8 +143,9 @@ function openWallet() {
   }
   show('wallet');
 
-  const bonus = isNewWallet ? 1000 : 0;
-  const bal = (bonus + (isNewWallet ? 0 : 7240.12)).toFixed(2);
+  if (isNewWallet && !wallets[accountIndex].bal) wallets[accountIndex].bal = 1000;
+  const bal = (wallets[accountIndex].bal || 0).toFixed(2);
+  saveWallets();
   if (window.setBalanceDisplay) window.setBalanceDisplay(bal);
   const asset = document.getElementById('asset-cyp');
   if (asset) asset.textContent = bal;
@@ -211,3 +212,57 @@ if (localStorage.getItem('mask_has_wallet')) {
   isNewWallet = false;
   openWallet();
 }
+
+// AI security scanner (open-source heuristics)
+function scanUrl(url) {
+  const flags = [];
+  const u = (url || '').toLowerCase();
+  const bad = ['phishing','metamask-login','wallet-connect-claim','airdrop-claim','seed-phrase','verify-wallet','kucoin-bonus','free-crypto','double-your'];
+  bad.forEach(b => { if (u.includes(b)) flags.push(b); });
+  if (u.includes('xn--') || (u.match(/-/g)||[]).length > 4) flags.push('suspicious-domain');
+  if (!u.startsWith('https://')) flags.push('no-https');
+  return { safe: flags.length === 0, flags };
+}
+
+function openInBrowser(url) {
+  if (!url.startsWith('http')) url = 'https://' + url;
+  const scan = scanUrl(url);
+  const flag = document.getElementById('browser-flag');
+  const frame = document.getElementById('browser-frame');
+  const input = document.getElementById('browser-url');
+  if (input) input.value = url;
+  if (flag) {
+    flag.classList.toggle('hidden', scan.safe);
+    if (!scan.safe) flag.textContent = '⚠ AI security flagged: ' + scan.flags.join(', ');
+  }
+  if (frame) frame.src = url;
+  if (window.showView) window.showView('browser');
+  else document.querySelector('[data-action="dapp"]')?.click();
+}
+
+document.querySelectorAll('#view-dapp a[href]').forEach(a => {
+  a.onclick = (e) => { e.preventDefault(); openInBrowser(a.href); };
+});
+
+const goBtn = document.getElementById('browser-go');
+if (goBtn) goBtn.onclick = () => openInBrowser(document.getElementById('browser-url').value);
+
+// Earn / Explore tabs
+document.querySelectorAll('#view-dapp button').forEach(btn => {
+  if (['Earn','Explore','DApps','Airdrops','Featured'].includes(btn.textContent.trim())) {
+    btn.onclick = () => {
+      document.querySelectorAll('#view-dapp button').forEach(b => {
+        if (['Earn','Explore','DApps','Airdrops','Featured'].includes(b.textContent.trim())) {
+          b.classList.remove('accent','border-b-2','border-[#f0762a]','font-medium');
+          b.classList.add('text-gray-500');
+        }
+      });
+      btn.classList.add('accent','border-b-2','border-[#f0762a]','font-medium');
+      btn.classList.remove('text-gray-500');
+      toast(btn.textContent.trim() + ' — content below');
+    };
+  }
+});
+
+window.showView = window.showView || function(n){};
+window.openInBrowser = openInBrowser;
