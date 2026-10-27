@@ -196,6 +196,8 @@
           <a href="https://cypheranon-dev.github.io/ShieldLend/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">SL</div><div class="text-sm font-medium">ShieldLend</div><div class="text-xs text-gray-500">Lend & borrow</div></a>
           <a href="https://cypheranon-dev.github.io/CypherBridge/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">CB</div><div class="text-sm font-medium">Cypher Bridge</div><div class="text-xs text-gray-500">Cross-chain</div></a>
           <a href="https://cypheranon-dev.github.io/CypherDAO/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">DAO</div><div class="text-sm font-medium">Cypher DAO</div><div class="text-xs text-gray-500">Governance + Mining</div></a>
+          <a href="https://cypheranon-dev.github.io/CypherOracle/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">OR</div><div class="text-sm font-medium">Cypher Oracle</div><div class="text-xs text-gray-500">Native AI · stake-weighted</div></a>
+
         </div>
         <div class="pill rounded-xl p-3 text-xs text-gray-400">Every connection request is scanned for malicious contracts and lookalike addresses before you ever see a prompt to sign.</div>
       </div>
@@ -217,6 +219,33 @@
         <div class="flex gap-2 mb-6"><button class="pill px-4 py-1.5 rounded-full text-sm">24h</button><button class="pill px-4 py-1.5 rounded-full text-sm bg-[#2a2018] text-[#f0762a]">30d</button><button class="pill px-4 py-1.5 rounded-full text-sm">1y</button></div>
         <button class="btn w-full py-4 rounded-2xl">Derive viewing key</button>
         <p class="text-xs text-gray-500 text-center mt-3">Viewing keys are read-only and can never spend. There is no master or foundation key.</p>
+      </div>
+
+
+      <!-- Swap (internal tab) -->
+      <div id="view-swap" class="hidden flex-1 p-4">
+        <div class="text-lg font-semibold mb-4">Swap</div>
+        <div class="pill rounded-xl p-4 mb-4">
+          <div class="text-xs text-gray-500 mb-1">From</div>
+          <div class="flex justify-between items-center"><span class="text-2xl">500.00</span><span class="accent text-sm">C CYPHER</span></div>
+          <div class="text-center my-2 text-gray-500">↓</div>
+          <div class="text-xs text-gray-500 mb-1">To</div>
+          <div class="flex justify-between items-center"><span class="text-2xl">0.0208</span><span class="accent text-sm">B cBTC</span></div>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Routed through the shielded pool — no public order trail.</p>
+        <a href="https://cypheranon-dev.github.io/Maskswap/" class="btn w-full py-4 rounded-2xl text-center block">Open full Swap</a>
+      </div>
+
+      <!-- Lend (internal tab) -->
+      <div id="view-lend" class="hidden flex-1 p-4">
+        <div class="text-lg font-semibold mb-4">ShieldLend</div>
+        <div class="pill rounded-xl p-4 mb-4 grid grid-cols-3 text-center">
+          <div><div class="text-xs text-gray-500">Net APY</div><div class="accent font-semibold">6.8%</div></div>
+          <div><div class="text-xs text-gray-500">Supplied</div><div>$9,120</div></div>
+          <div><div class="text-xs text-gray-500">Borrowed</div><div>$2,040</div></div>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Positions proven via range proofs. Balances stay hidden.</p>
+        <a href="https://cypheranon-dev.github.io/ShieldLend/" class="btn w-full py-4 rounded-2xl text-center block">Open full Lend</a>
       </div>
 
       <!-- Security -->
@@ -249,8 +278,8 @@
     <!-- Bottom nav -->
     <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0c0e16] border-t border-gray-800 flex justify-around py-3 text-xs hidden">
       <button data-nav="home" class="nav-item active flex flex-col items-center gap-1 text-gray-500">Home</button>
-      <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1 text-gray-500">Swap</a>
-      <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1 text-gray-500">Lend</a>
+      <button data-nav="swap" class="nav-item flex flex-col items-center gap-1 text-gray-500">Swap</button>
+      <button data-nav="lend" class="nav-item flex flex-col items-center gap-1 text-gray-500">Lend</button>
       <button data-nav="dapp" class="nav-item flex flex-col items-center gap-1 text-gray-500">dApps</button>
       <button data-nav="security" class="nav-item flex flex-col items-center gap-1 text-gray-500">Security</button>
     </nav>
@@ -292,7 +321,7 @@
       setBalanceDisplay(realBalance);
     };
 
-    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review'];
+    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review','swap','lend'];
     function showView(name) {
       views.forEach(v => {
         const el = document.getElementById('view-'+v);
@@ -311,6 +340,7 @@
     document.querySelectorAll('[data-nav]').forEach(b => {
       b.onclick = () => showView(b.dataset.nav);
     });
+    // Bottom tabs always switch directly — no back required
 
     const walletEl = document.getElementById('wallet');
     const nav = document.getElementById('bottom-nav');
@@ -365,3 +395,4 @@
   </script>
 </body>
 </html>
+
