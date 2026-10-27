@@ -178,12 +178,15 @@ if (newAddr) newAddr.onclick = () => {
 };
 
 const switchAcct = document.getElementById('switch-account');
-if (switchAcct) switchAcct.onclick = () => {
+if (switchAcct) switchAcct.onclick = async () => {
+  currentMnemonic = bip39.generateMnemonic(wordlist, 256);
+  if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return toast('Generation failed');
   accountIndex = wallets.length;
   addressIndex = 0;
   isNewWallet = true;
-  openWallet();
-  toast('Added ' + walletLabel(accountIndex));
+  renderSeed(currentMnemonic);
+  show('seed-screen');
+  toast('New random seed generated');
 };
 
 const exportSeed = document.getElementById('export-seed');
