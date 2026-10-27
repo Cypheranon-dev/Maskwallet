@@ -382,6 +382,17 @@
       </div>
     </div>
 
+
+      <!-- In-wallet browser -->
+      <div id="view-browser" class="hidden flex-1 flex flex-col">
+        <div class="flex items-center gap-2 p-2 border-b border-gray-800">
+          <button data-action="dapp" class="text-gray-500">←</button>
+          <input id="browser-url" class="input flex-1 rounded-lg px-3 py-1.5 text-xs" placeholder="https://" />
+          <button id="browser-go" class="btn px-3 py-1.5 rounded-lg text-xs">Go</button>
+        </div>
+        <div id="browser-flag" class="hidden px-3 py-2 text-xs bg-red-900/40 text-red-300">⚠ Suspicious site flagged by AI security</div>
+        <iframe id="browser-frame" class="flex-1 w-full border-0 bg-white" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
+      </div>
     <!-- Bottom nav -->
     <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0c0e16] border-t border-gray-800 flex justify-around py-3 text-xs hidden">
       <button data-nav="home" class="nav-item active flex flex-col items-center gap-0.5 text-gray-500"><span class="text-base">▭</span>Wallet</button>
@@ -428,8 +439,9 @@
       setBalanceDisplay(realBalance);
     };
 
-    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review','swap','lend'];
+    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review','swap','lend','browser'];
     function showView(name) {
+      window.showView = showView;
       views.forEach(v => {
         const el = document.getElementById('view-'+v);
         if (el) el.classList.toggle('hidden', v !== name);
