@@ -16,7 +16,6 @@
     .card { background: #0c0e16; border: 1px solid rgba(255,255,255,0.06); }
     .accent { color: #f0762a; }
     .btn { background: #f0762a; color: #05070d; font-weight: 600; }
-    .btn:hover { background: #ff8a3d; }
     .pill { background: #1a1d28; border: 1px solid rgba(255,255,255,0.08); }
     .input { background: #1a1d28; border: 1px solid rgba(255,255,255,0.08); }
     .input:focus { outline: none; border-color: #f0762a; }
@@ -29,18 +28,21 @@
     .toggle:checked { background: #f0762a; }
     .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 1.1rem; height: 1.1rem; background: white; border-radius: 50%; transition: 0.2s; }
     .toggle:checked::after { left: 1.25rem; }
+    .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: flex-end; justify-content: center; z-index: 40; }
+    .modal.hidden { display: none; }
   </style>
 </head>
 <body class="min-h-screen antialiased">
   <div class="max-w-md mx-auto min-h-screen flex flex-col pb-20">
-    <!-- Onboarding screens stay functional -->
-    <div id="onboard" class="p-6 flex-1 flex flex-col justify-center">
-      <div class="card rounded-2xl p-6">
-        <h1 class="text-xl font-semibold mb-1">Create wallet</h1>
-        <p class="text-sm text-gray-400 mb-6">Self-custodial. New accounts receive 1,000 CYP.</p>
-        <button id="create-new" class="btn w-full py-3 rounded-xl mb-3">Create new wallet</button>
-        <button id="restore" class="w-full py-3 rounded-xl border border-gray-700 text-sm">Restore from seed</button>
-      </div>
+    <!-- Onboarding -->
+    <div id="onboard" class="flex-1 flex flex-col justify-center items-center p-6 text-center">
+      <div class="w-14 h-14 rounded-2xl bg-[#1a1d28] flex items-center justify-center mb-4 accent text-2xl">◆</div>
+      <div class="text-xs tracking-widest text-gray-500 mb-1">CYPHER NETWORK</div>
+      <h1 class="text-2xl font-semibold mb-2">Mask Wallet</h1>
+      <p class="text-sm text-gray-400 mb-8 max-w-xs">Your keys and your activity stay on this device. Nothing is sent anywhere unless you choose to send it.</p>
+      <button id="create-new" class="btn w-full py-4 rounded-2xl mb-3">Create new wallet</button>
+      <button id="restore" class="w-full py-4 rounded-2xl border border-gray-700 text-sm">Restore from recovery phrase</button>
+      <p class="text-xs text-gray-600 mt-6">▣ Works fully offline after setup</p>
     </div>
 
     <div id="seed-screen" class="p-6 hidden flex-1">
@@ -58,75 +60,53 @@
       </div>
     </div>
 
+    <!-- Optional password (accessed from Security) -->
     <div id="password-screen" class="p-6 hidden flex-1">
       <div class="card rounded-2xl p-6">
-        <h2 class="text-lg font-semibold mb-1">Set password</h2>
-        <p class="text-xs text-gray-400 mb-4">Encrypts the seed on this device.</p>
+        <h2 class="text-lg font-semibold mb-1">Set optional password</h2>
+        <p class="text-xs text-gray-400 mb-4">Encrypts the seed on this device. You can skip this.</p>
         <input id="pw1" type="password" placeholder="Password" class="input w-full rounded-lg px-3 py-2.5 text-sm mb-2" />
         <input id="pw2" type="password" placeholder="Confirm" class="input w-full rounded-lg px-3 py-2.5 text-sm mb-4" />
-        <button id="set-password" class="btn w-full py-3 rounded-xl">Encrypt and open</button>
+        <button id="set-password" class="btn w-full py-3 rounded-xl mb-2">Encrypt</button>
+        <button id="skip-password" class="w-full py-3 rounded-xl border border-gray-700 text-sm">Skip</button>
       </div>
     </div>
 
-    <!-- Main wallet -->
+    <!-- Main -->
     <div id="wallet" class="hidden flex-1 flex flex-col">
       <!-- Home -->
       <div id="view-home" class="flex-1 p-4">
         <div class="flex justify-between items-center text-xs mb-6">
           <span class="flex items-center gap-1.5 text-gray-400"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Online · Local node</span>
-          <span class="accent flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/></svg> Shielded mode</span>
+          <span class="accent">Shielded mode</span>
         </div>
-
         <div class="text-xs text-gray-500 mb-1">Total balance</div>
         <div class="flex items-center gap-2 mb-1">
-          <div class="text-3xl font-semibold tracking-tight" id="balance-display">••••••••</div>
-          <button id="toggle-balance" class="text-gray-500">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-          </button>
+          <div class="text-3xl font-semibold" id="balance-display">••••••••</div>
+          <button id="toggle-balance" class="text-gray-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
         </div>
-        <div class="text-xs accent mb-6" id="usd-change">▲ 2.4% today</div>
-
+        <div class="text-xs accent mb-6">▲ 2.4% today</div>
         <div class="flex justify-around mb-8">
-          <button data-action="send" class="flex flex-col items-center gap-1.5">
-            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
-            <span class="text-xs text-gray-400">Send</span>
-          </button>
-          <button data-action="receive" class="flex flex-col items-center gap-1.5">
-            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
-            <span class="text-xs text-gray-400">Receive</span>
-          </button>
-          <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1.5">
-            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg></div>
-            <span class="text-xs text-gray-400">Swap</span>
-          </a>
-          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1.5">
-            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
-            <span class="text-xs text-gray-400">Earn</span>
-          </a>
+          <button data-action="send" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">↑</div><span class="text-xs text-gray-400">Send</span></button>
+          <button data-action="receive" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">↓</div><span class="text-xs text-gray-400">Receive</span></button>
+          <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">⇄</div><span class="text-xs text-gray-400">Swap</span></a>
+          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">⌂</div><span class="text-xs text-gray-400">Earn</span></a>
         </div>
-
         <div class="text-xs text-gray-500 mb-3">Assets</div>
-        <div class="space-y-1" id="assets-list">
-          <div class="flex items-center justify-between py-3">
-            <div class="flex items-center gap-3">
-              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-medium">C</div>
-              <div><div class="text-sm">Cypher</div><div class="text-xs text-gray-500">CYPHER</div></div>
-            </div>
-            <div class="text-right">
-              <div class="text-sm" id="asset-cyp">0.00</div>
-              <div class="text-xs accent">+3.1%</div>
-            </div>
-          </div>
+        <div class="space-y-1">
+          <button data-action="asset" class="w-full flex items-center justify-between py-3">
+            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs">C</div><div class="text-left"><div class="text-sm">Cypher</div><div class="text-xs text-gray-500">CYPHER</div></div></div>
+            <div class="text-right"><div class="text-sm" id="asset-cyp">0.00</div><div class="text-xs accent">+3.1%</div></div>
+          </button>
+          <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs">B</div><div><div class="text-sm">Wrapped BTC</div><div class="text-xs text-gray-500">cBTC</div></div></div><div class="text-right"><div class="text-sm">0.0412</div><div class="text-xs text-blue-400">-0.8%</div></div></div>
+          <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs">E</div><div><div class="text-sm">Wrapped ETH</div><div class="text-xs text-gray-500">cETH</div></div></div><div class="text-right"><div class="text-sm">1.228</div><div class="text-xs accent">+1.5%</div></div></div>
         </div>
+        <button data-action="activity" class="w-full text-left text-xs text-gray-500 mt-4">View activity →</button>
       </div>
 
       <!-- Send -->
       <div id="view-send" class="hidden flex-1 p-4 flex flex-col">
-        <div class="flex items-center mb-6">
-          <button data-action="home" class="text-gray-400 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-          <span class="flex-1 text-center font-medium">Send</span>
-          <div class="w-5"></div>
-        </div>
+        <div class="flex items-center mb-6"><button data-action="home" class="text-gray-400 mr-3">←</button><span class="flex-1 text-center font-medium">Send</span><div class="w-5"></div></div>
         <label class="text-xs text-gray-500 mb-1">To</label>
         <input id="send-to" placeholder="cph1q... or contact" class="input w-full rounded-xl px-4 py-3 text-sm mb-4" />
         <label class="text-xs text-gray-500 mb-1">Privacy level</label>
@@ -140,38 +120,103 @@
           <input id="send-amt" type="number" step="any" placeholder="0.00" class="bg-transparent flex-1 text-2xl outline-none" />
           <span class="text-xs text-gray-400 pill px-2 py-1 rounded">CYPHER</span>
         </div>
-        <div class="flex justify-between text-xs mb-4">
-          <span class="text-gray-500" id="send-usd">≈ $0.00</span>
-          <button id="send-max" class="accent">Max</button>
-        </div>
-        <div class="flex justify-between text-xs text-gray-500 mb-4">
-          <span>Network fee</span>
-          <span>0.0004 CYPHER</span>
-        </div>
+        <div class="flex justify-between text-xs mb-4"><span class="text-gray-500" id="send-usd">≈ $0.00</span><button id="send-max" class="accent">Max</button></div>
+        <div class="flex justify-between text-xs text-gray-500 mb-4"><span>Network fee</span><span>0.0004 CYPHER</span></div>
         <div class="pill rounded-xl p-3 flex items-center justify-between mb-6">
-          <div>
-            <div class="text-sm flex items-center gap-2"><span class="accent">▣</span> Sign offline</div>
-            <div class="text-xs text-gray-500">Export as QR for your air-gapped signer</div>
-          </div>
+          <div><div class="text-sm">Sign offline</div><div class="text-xs text-gray-500">Export as QR for your air-gapped signer</div></div>
           <input type="checkbox" class="toggle" id="offline-sign" />
         </div>
         <button id="do-send" class="btn w-full py-4 rounded-2xl mt-auto">Review & Sign</button>
       </div>
 
+      <!-- Review -->
+      <div id="view-review" class="hidden flex-1 p-4 flex flex-col">
+        <div class="flex items-center mb-6"><button data-action="send" class="text-gray-400 mr-3">←</button><span class="flex-1 text-center font-medium">Review</span><div class="w-5"></div></div>
+        <div class="text-center mb-6"><div class="text-4xl font-semibold" id="review-amt">0.00</div><div class="text-xs text-gray-500" id="review-usd">CYPHER · ≈ $0.00</div></div>
+        <div class="pill rounded-xl p-4 text-sm space-y-2 mb-4">
+          <div class="flex justify-between"><span class="text-gray-500">To</span><span id="review-to" class="font-mono text-xs">—</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Privacy</span><span class="accent text-xs pill px-2 py-0.5 rounded">Shielded</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Network fee</span><span>0.0004 CYPHER</span></div>
+          <div class="flex justify-between"><span class="text-gray-500">Signing method</span><span id="review-sign">Online</span></div>
+        </div>
+        <div class="pill rounded-xl p-3 text-xs text-gray-400 mb-6">Shielded sends can't be reversed. Double-check the recipient before signing.</div>
+        <button id="confirm-send" class="btn w-full py-4 rounded-2xl mt-auto">Sign</button>
+        <button data-action="send" class="w-full py-2 text-sm text-gray-500 mt-2">Cancel</button>
+      </div>
+
       <!-- Receive -->
       <div id="view-receive" class="hidden flex-1 p-4 flex flex-col">
-        <div class="flex items-center mb-6">
-          <button data-action="home" class="text-gray-400 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
-          <span class="flex-1 text-center font-medium">Receive</span>
-          <div class="w-5"></div>
+        <div class="flex items-center mb-6"><button data-action="home" class="text-gray-400 mr-3">←</button><span class="flex-1 text-center font-medium">Receive</span><div class="w-5"></div></div>
+        <div class="flex gap-2 mb-4">
+          <button class="flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]">Shielded</button>
+          <button class="flex-1 py-2 rounded-xl text-sm text-gray-400 pill">Transparent</button>
         </div>
         <div class="card rounded-2xl p-5 text-center">
-          <p class="text-xs text-gray-500 mb-3">Share this address to receive private CYPHER</p>
-          <p id="ua" class="text-xs font-mono break-all text-gray-300 mb-4"></p>
           <div id="qr" class="flex justify-center mb-4"></div>
-          <button id="copy-addr" class="w-full py-2 rounded-lg border border-gray-700 text-sm mb-2">Copy address</button>
-          <button id="new-addr" class="w-full py-2 rounded-lg border border-gray-700 text-sm">New address</button>
+          <div class="pill rounded-xl px-4 py-2 flex items-center justify-between text-xs font-mono"><span id="ua" class="truncate">—</span><button id="copy-addr" class="accent">Copy</button></div>
+          <p class="text-xs text-gray-500 mt-4">A fresh address is derived for every request — safe to publish, unlinkable to your other transactions.</p>
+          <button id="new-addr" class="w-full py-2 mt-3 rounded-lg border border-gray-700 text-sm">New address</button>
         </div>
+        <button class="btn w-full py-4 rounded-2xl mt-4">Share address</button>
+      </div>
+
+      <!-- Activity -->
+      <div id="view-activity" class="hidden flex-1 p-4">
+        <div class="flex items-center mb-4"><button data-action="home" class="text-gray-400 mr-3">←</button><span class="font-medium">Activity</span></div>
+        <div class="space-y-1 text-sm">
+          <div class="flex items-center justify-between py-3 border-b border-gray-800"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center accent">↓</div><div><div>Received</div><div class="text-xs text-gray-500">Today · 2:14 PM</div></div></div><span class="text-xs accent pill px-2 py-0.5 rounded">Shielded</span></div>
+          <div class="flex items-center justify-between py-3 border-b border-gray-800"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center accent">↑</div><div><div>Sent</div><div class="text-xs text-gray-500">Today · 9:02 AM</div></div></div><span class="text-xs accent pill px-2 py-0.5 rounded">Shielded</span></div>
+          <div class="flex items-center justify-between py-3 border-b border-gray-800"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">⇄</div><div><div>Swapped CYPHER → cBTC</div><div class="text-xs text-gray-500">Yesterday · 6:40 PM</div></div></div><div class="text-right text-xs"><div>500.00</div><div class="text-gray-500">Confirmed</div></div></div>
+          <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center">⌂</div><div><div>Supplied to lending</div><div class="text-xs text-gray-500">Oct 24 · 11:20 AM</div></div></div><div class="text-right text-xs"><div>1,200.00</div><div class="text-gray-500">Confirmed</div></div></div>
+        </div>
+      </div>
+
+      <!-- Asset -->
+      <div id="view-asset" class="hidden flex-1 p-4">
+        <div class="flex items-center mb-4"><button data-action="home" class="text-gray-400 mr-3">←</button><span class="font-medium">Cypher</span></div>
+        <div class="text-4xl font-semibold mb-1">$1.4723</div>
+        <div class="text-xs accent mb-6">▲ 3.1% · 1D</div>
+        <div class="h-24 flex items-end gap-1 mb-4"><div class="flex-1 bg-orange-600/60 rounded-t" style="height:30%"></div><div class="flex-1 bg-orange-600/70 rounded-t" style="height:40%"></div><div class="flex-1 bg-orange-600/80 rounded-t" style="height:55%"></div><div class="flex-1 bg-orange-600 rounded-t" style="height:70%"></div><div class="flex-1 bg-orange-500 rounded-t" style="height:85%"></div></div>
+        <div class="flex justify-around mb-6 text-xs"><button data-action="send" class="flex flex-col items-center gap-1"><div class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center accent">↑</div>Send</button><button data-action="receive" class="flex flex-col items-center gap-1"><div class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center accent">↓</div>Receive</button><a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1"><div class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center accent">⇄</div>Swap</a><a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1"><div class="icon-btn w-10 h-10 rounded-xl flex items-center justify-center accent">⌂</div>Stake</a></div>
+        <div class="text-sm space-y-2 text-gray-400">
+          <div class="flex justify-between"><span>Your balance</span><span id="asset-bal-detail">••••</span></div>
+          <div class="flex justify-between"><span>Circulating supply</span><span>[–]</span></div>
+          <div class="flex justify-between"><span>Market cap</span><span>[–]</span></div>
+          <div class="flex justify-between"><span>Shielded pool size</span><span>[–]</span></div>
+        </div>
+      </div>
+
+      <!-- dApp Browser -->
+      <div id="view-dapp" class="hidden flex-1 p-4">
+        <div class="flex items-center mb-4"><button data-action="home" class="text-gray-400 mr-3">←</button><span class="font-medium">dApp Browser</span></div>
+        <div class="pill rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-gray-400 mb-4"><span>⌕</span> Search or enter dApp URL <span class="ml-auto accent">◆</span></div>
+        <div class="text-xs text-gray-500 mb-2">Cypher ecosystem</div>
+        <div class="grid grid-cols-2 gap-2 mb-4">
+          <a href="https://cypheranon-dev.github.io/Maskswap/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">MS</div><div class="text-sm font-medium">MaskSwap</div><div class="text-xs text-gray-500">Shielded DEX</div></a>
+          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">SL</div><div class="text-sm font-medium">ShieldLend</div><div class="text-xs text-gray-500">Lend & borrow</div></a>
+          <a href="https://cypheranon-dev.github.io/CypherBridge/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">CB</div><div class="text-sm font-medium">Cypher Bridge</div><div class="text-xs text-gray-500">Cross-chain</div></a>
+          <a href="https://cypheranon-dev.github.io/CypherDAO/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">DAO</div><div class="text-sm font-medium">Cypher DAO</div><div class="text-xs text-gray-500">Governance + Mining</div></a>
+        </div>
+        <div class="pill rounded-xl p-3 text-xs text-gray-400">Every connection request is scanned for malicious contracts and lookalike addresses before you ever see a prompt to sign.</div>
+      </div>
+
+      <!-- Viewing Key -->
+      <div id="view-vkey" class="hidden flex-1 p-4 overflow-auto">
+        <div class="flex items-center mb-4"><button data-action="security" class="text-gray-400 mr-3">←</button><span class="font-medium">Viewing Key Builder</span></div>
+        <div class="text-xs text-gray-500 mb-2">GRANT TO</div>
+        <div class="flex flex-wrap gap-2 mb-4"><button class="pill px-3 py-1.5 rounded-full text-sm bg-[#2a2018] text-[#f0762a]">Exchange</button><button class="pill px-3 py-1.5 rounded-full text-sm">Auditor</button><button class="pill px-3 py-1.5 rounded-full text-sm">Tax authority</button><button class="pill px-3 py-1.5 rounded-full text-sm">Counterparty</button></div>
+        <div class="text-xs text-gray-500 mb-2">SCOPE</div>
+        <div class="flex flex-wrap gap-2 mb-4"><button class="pill px-3 py-1.5 rounded-full text-sm">All history</button><button class="pill px-3 py-1.5 rounded-full text-sm bg-[#2a2018] text-[#f0762a]">Incoming only</button><button class="pill px-3 py-1.5 rounded-full text-sm">Outgoing only</button><button class="pill px-3 py-1.5 rounded-full text-sm">Picked txs</button></div>
+        <div class="text-xs text-gray-500 mb-2">DECRYPTABLE FIELDS</div>
+        <div class="pill rounded-xl p-4 text-sm space-y-2 mb-4">
+          <div class="flex justify-between"><span>Counterparty</span><span class="accent">✓</span></div>
+          <div class="flex justify-between"><span>Amount</span><span class="accent">✓</span></div>
+          <div class="flex justify-between"><span>Memo</span><span class="text-gray-600">□</span></div>
+        </div>
+        <div class="text-xs text-gray-500 mb-2">EXPIRES AFTER</div>
+        <div class="flex gap-2 mb-6"><button class="pill px-4 py-1.5 rounded-full text-sm">24h</button><button class="pill px-4 py-1.5 rounded-full text-sm bg-[#2a2018] text-[#f0762a]">30d</button><button class="pill px-4 py-1.5 rounded-full text-sm">1y</button></div>
+        <button class="btn w-full py-4 rounded-2xl">Derive viewing key</button>
+        <p class="text-xs text-gray-500 text-center mt-3">Viewing keys are read-only and can never spend. There is no master or foundation key.</p>
       </div>
 
       <!-- Security -->
@@ -179,66 +224,35 @@
         <div class="text-lg font-semibold mb-6">Security & Privacy</div>
         <div class="text-xs text-gray-500 tracking-wider mb-2">RECOVERY</div>
         <div class="pill rounded-xl p-4 flex justify-between items-center mb-6">
-          <div>
-            <div class="flex items-center gap-2 text-sm"><span class="text-green-400">✓</span> Recovery phrase</div>
-            <div class="text-xs text-gray-500">Backed up · last verified today</div>
-          </div>
+          <div><div class="flex items-center gap-2 text-sm"><span class="text-green-400">✓</span> Recovery phrase</div><div class="text-xs text-gray-500">Backed up · last verified today</div></div>
           <button id="export-seed" class="accent text-sm">Verify</button>
         </div>
         <div class="text-xs text-gray-500 tracking-wider mb-2">VIEWING KEYS</div>
         <div class="pill rounded-xl p-4 mb-3">
           <p class="text-xs text-gray-400 mb-3">Share a viewing key to prove specific transactions — for audits or exchange KYC — without exposing your full history.</p>
-          <div class="text-xs space-y-2">
-            <div class="flex justify-between py-1 border-b border-gray-800"><span>kucoin-ramp.vk</span><span class="text-gray-500">Active</span></div>
-            <div class="flex justify-between py-1"><span>tax-2026.vk</span><span class="text-gray-500">Active</span></div>
-          </div>
+          <div class="text-xs space-y-2"><div class="flex justify-between py-1 border-b border-gray-800"><span>kucoin-ramp.vk</span><span class="text-gray-500">Active</span></div><div class="flex justify-between py-1"><span>tax-2026.vk</span><span class="text-gray-500">Active</span></div></div>
         </div>
-        <button class="accent text-sm mb-6">+ Generate new viewing key</button>
+        <button data-action="vkey" class="accent text-sm mb-6">+ Generate new viewing key</button>
         <div class="text-xs text-gray-500 tracking-wider mb-2">NETWORK</div>
-        <div class="pill rounded-xl p-4 mb-2">
-          <div class="text-sm">Node</div>
-          <div class="text-xs text-gray-500">Local full node running on this device</div>
-        </div>
-        <div class="pill rounded-xl p-4 flex items-center justify-between mb-6">
-          <div>
-            <div class="text-sm flex items-center gap-2"><span class="accent">▣</span> Offline mode</div>
-            <div class="text-xs text-gray-500">Sign via QR with no network connection</div>
-          </div>
-          <input type="checkbox" class="toggle" />
-        </div>
+        <div class="pill rounded-xl p-4 mb-2"><div class="text-sm">Node</div><div class="text-xs text-gray-500">Local full node running on this device</div></div>
+        <div class="pill rounded-xl p-4 flex items-center justify-between mb-6"><div><div class="text-sm">Offline mode</div><div class="text-xs text-gray-500">Sign via QR with no network connection</div></div><input type="checkbox" class="toggle" /></div>
         <div class="text-xs text-gray-500 tracking-wider mb-2">PRIVACY DEFAULTS</div>
-        <div class="pill rounded-xl p-4 flex items-center justify-between mb-2">
-          <span class="text-sm">Default to shielded sends</span>
-          <input type="checkbox" class="toggle" checked />
-        </div>
-        <div class="pill rounded-xl p-4 flex items-center justify-between mb-6">
-          <span class="text-sm">Auto-hide balances</span>
-          <input type="checkbox" class="toggle" checked />
-        </div>
+        <div class="pill rounded-xl p-4 flex items-center justify-between mb-2"><span class="text-sm">Default to shielded sends</span><input type="checkbox" class="toggle" checked /></div>
+        <div class="pill rounded-xl p-4 flex items-center justify-between mb-6"><span class="text-sm">Auto-hide balances</span><input type="checkbox" class="toggle" checked /></div>
+        <button id="set-pw-btn" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mb-2">Set optional password</button>
+        <button id="hw-wallet" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mb-2">Hardware wallet</button>
+        <button id="switch-account" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mb-2">New account</button>
         <button id="clear-wallet" class="w-full py-2.5 rounded-lg border border-red-900/50 text-red-400 text-sm">Remove from device</button>
-        <button id="switch-account" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mt-2">New account</button>
-        <button id="hw-wallet" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mt-2">Hardware wallet</button>
       </div>
     </div>
 
     <!-- Bottom nav -->
     <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0c0e16] border-t border-gray-800 flex justify-around py-3 text-xs hidden">
-      <button data-nav="home" class="nav-item active flex flex-col items-center gap-1 text-gray-500">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-        Home
-      </button>
-      <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1 text-gray-500">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
-        Swap
-      </a>
-      <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1 text-gray-500">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
-        Lend
-      </a>
-      <button data-nav="security" class="nav-item flex flex-col items-center gap-1 text-gray-500">
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-        Security
-      </button>
+      <button data-nav="home" class="nav-item active flex flex-col items-center gap-1 text-gray-500">Home</button>
+      <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1 text-gray-500">Swap</a>
+      <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1 text-gray-500">Lend</a>
+      <button data-nav="dapp" class="nav-item flex flex-col items-center gap-1 text-gray-500">dApps</button>
+      <button data-nav="security" class="nav-item flex flex-col items-center gap-1 text-gray-500">Security</button>
     </nav>
   </div>
   <div id="toast" class="toast"></div>
@@ -260,12 +274,15 @@
       realBalance = val;
       const el = document.getElementById('balance-display');
       const asset = document.getElementById('asset-cyp');
+      const detail = document.getElementById('asset-bal-detail');
       if (balanceHidden) {
-        el.textContent = '••••••••';
+        if (el) el.textContent = '••••••••';
         if (asset) asset.textContent = '••••';
+        if (detail) detail.textContent = '••••';
       } else {
-        el.textContent = val;
+        if (el) el.textContent = val;
         if (asset) asset.textContent = val;
+        if (detail) detail.textContent = val;
       }
     }
     window.setBalanceDisplay = setBalanceDisplay;
@@ -275,9 +292,11 @@
       setBalanceDisplay(realBalance);
     };
 
+    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review'];
     function showView(name) {
-      ['home','send','receive','security'].forEach(v => {
-        document.getElementById('view-'+v).classList.toggle('hidden', v !== name);
+      views.forEach(v => {
+        const el = document.getElementById('view-'+v);
+        if (el) el.classList.toggle('hidden', v !== name);
       });
       document.querySelectorAll('[data-nav]').forEach(b => {
         b.classList.toggle('active', b.dataset.nav === name);
@@ -293,7 +312,6 @@
       b.onclick = () => showView(b.dataset.nav);
     });
 
-    // Show bottom nav when wallet is open
     const walletEl = document.getElementById('wallet');
     const nav = document.getElementById('bottom-nav');
     new MutationObserver(() => {
@@ -317,6 +335,32 @@
     document.getElementById('priv-transparent').onclick = function() {
       this.className = 'flex-1 py-2.5 rounded-xl text-sm font-medium bg-[#2a2018] text-[#f0762a]';
       document.getElementById('priv-shielded').className = 'flex-1 py-2.5 rounded-xl text-sm text-gray-400 pill';
+    };
+
+    document.getElementById('do-send').onclick = () => {
+      const to = document.getElementById('send-to').value || 'cph1q•••••k92f';
+      const amt = document.getElementById('send-amt').value || '0';
+      document.getElementById('review-amt').textContent = amt;
+      document.getElementById('review-usd').textContent = 'CYPHER · ≈ $' + (parseFloat(amt)*0.25).toFixed(2);
+      document.getElementById('review-to').textContent = to.slice(0,8) + '••••' + to.slice(-4);
+      document.getElementById('review-sign').textContent = document.getElementById('offline-sign').checked ? 'Offline · QR' : 'Online';
+      showView('review');
+    };
+    document.getElementById('confirm-send').onclick = () => {
+      toast(document.getElementById('offline-sign').checked ? 'Unsigned tx exported as QR' : 'Signed');
+      showView('home');
+    };
+
+    const setPw = document.getElementById('set-pw-btn');
+    if (setPw) setPw.onclick = () => {
+      document.getElementById('wallet').classList.add('hidden');
+      document.getElementById('password-screen').classList.remove('hidden');
+    };
+    const skip = document.getElementById('skip-password');
+    if (skip) skip.onclick = () => {
+      document.getElementById('password-screen').classList.add('hidden');
+      document.getElementById('wallet').classList.remove('hidden');
+      showView('security');
     };
   </script>
 </body>
