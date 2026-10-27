@@ -391,11 +391,11 @@
 
 
       <!-- In-wallet browser -->
-      <div id="view-browser" class="hidden flex-1 flex flex-col">
-        <div class="flex items-center gap-2 p-2 border-b border-gray-800">
-          <button data-action="dapp" class="text-gray-500">←</button>
-          <input id="browser-url" class="input flex-1 rounded-lg px-3 py-1.5 text-xs" placeholder="https://" />
-          <button id="browser-go" class="btn px-3 py-1.5 rounded-lg text-xs">Go</button>
+      <div id="view-browser" class="hidden fixed inset-0 flex flex-col bg-[#05070d] z-40">
+        <div class="flex items-center gap-2 p-2 border-b border-gray-800 pt-safe">
+          <button data-action="dapp" class="text-gray-500 px-2">←</button>
+          <input id="browser-url" class="input flex-1 rounded-lg px-3 py-2 text-xs" placeholder="https://" />
+          <button id="browser-go" class="btn px-3 py-2 rounded-lg text-xs">Go</button>
         </div>
         <div id="browser-flag" class="hidden px-3 py-2 text-xs bg-red-900/40 text-red-300">⚠ Suspicious site flagged by AI security</div>
         <iframe id="browser-frame" class="flex-1 w-full border-0 bg-white" sandbox="allow-scripts allow-same-origin allow-forms"></iframe>
