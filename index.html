@@ -37,7 +37,8 @@
     body.light #bottom-nav { background: #ffffff !important; border-top-color: #eef1f4 !important; }
     body.light .text-gray-500 { color: #6b7280; }
     body.light .border-gray-800 { border-color: #e5e7eb; }
-    html, body, button, a, input, .icon-btn, .nav-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    html, body, button, a, input, .icon-btn, .nav-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; -webkit-text-size-adjust: 100%; }
+    * { touch-action: manipulation; }
     @media (min-width: 768px) {
       body { background: #03050a; }
       .app-shell { max-width: 28rem; margin: 1.5rem auto; min-height: calc(100vh - 3rem); border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
@@ -50,6 +51,19 @@
   </style>
 </head>
 <body class="min-h-screen antialiased">
+<script>
+(function(){
+  var last = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if (now - last <= 300) {
+      e.preventDefault();
+    }
+    last = now;
+  }, {passive: false});
+})();
+</script>
+
   <div class="app-shell max-w-md mx-auto min-h-screen flex flex-col pb-20">
     <!-- Onboarding -->
     <div id="onboard" class="flex-1 flex flex-col justify-center items-center p-6 text-center">
