@@ -1,6 +1,5 @@
 // Mask Wallet for Cypher (CYP)
-// Inspired by ZODL but built for Cypher. Integrates with Mask Swap.
-// New wallets receive 1000 CYP bonus. Each CYP costs $0.25.
+// Password is optional and can be set later in Security.
 
 import * as bip39 from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/+esm';
 import { wordlist } from 'https://cdn.jsdelivr.net/npm/@scure/bip39@2.4.0/wordlists/english.js/+esm';
@@ -9,20 +8,21 @@ let currentMnemonic = null;
 let walletPassword = null;
 let addressIndex = 0;
 let accountIndex = 0;
-let cypPrice = 0.25; // each CYP costs $0.25
+let cypPrice = 0.25;
 let isNewWallet = false;
+let currentUA = '';
 
 function generateUA(account = 0, index = 0) {
   const entropy = crypto.getRandomValues(new Uint8Array(32));
   const hex = Array.from(entropy).map(b => b.toString(16).padStart(2,'0')).join('');
-  return `cyp1${hex.slice(0,48)}mask${account}${index}`;
+  return `cph1q${hex.slice(0,20)}${account}${index}k92f`;
 }
 
 async function encryptSeed(seed, password) {
   const enc = new TextEncoder();
   const keyMaterial = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveKey']);
   const key = await crypto.subtle.deriveKey(
-    { name: 'PBKDF2', salt: enc.encode('mask-cyp-salt'), iterations: 150000, hash: 'SHA-256' },
+    { name: 'PBKDF2', salt: enc.encode('mask-cyp-salt'), iterations: 100000, hash: 'SHA-256' },
     keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
   );
   const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -31,20 +31,33 @@ async function encryptSeed(seed, password) {
 }
 
 function show(id) {
-  ['onboard','seed-screen','password-screen','wallet'].forEach(s => document.getElementById(s).classList.add('hidden'));
-  document.getElementById(id).classList.remove('hidden');
+  ['onboard','seed-screen','password-screen','wallet'].forEach(s => {
+    const el = document.getElementById(s);
+    if (el) el.classList.add('hidden');
+  });
+  const target = document.getElementById(id);
+  if (target) target.classList.remove('hidden');
+  const nav = document.getElementById('bottom-nav');
+  if (nav) nav.classList.toggle('hidden', id !== 'wallet');
+}
+
+function toast(msg) {
+  if (window.toast) window.toast(msg);
+  else alert(msg);
 }
 
 function renderSeed(mnemonic) {
   const words = mnemonic.split(' ');
-  document.getElementById('seed-words').innerHTML = words.map((w, i) =>
+  const el = document.getElementById('seed-words');
+  if (!el) return;
+  el.innerHTML = words.map((w, i) =>
     `<div class="seed-word rounded px-1.5 py-1 text-center"><span class="text-gray-500 text-[10px]">${i+1}</span><br>${w}</div>`
   ).join('');
 }
 
 document.getElementById('create-new').onclick = async () => {
   currentMnemonic = bip39.generateMnemonic(wordlist, 256);
-  if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return alert('Generation failed');
+  if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return toast('Generation failed');
   isNewWallet = true;
   renderSeed(currentMnemonic);
   show('seed-screen');
@@ -54,10 +67,10 @@ document.getElementById('restore').onclick = () => {
   const phrase = prompt('Paste your 24-word seed phrase:');
   if (!phrase) return;
   const cleaned = phrase.trim().toLowerCase().replace(/\s+/g, ' ');
-  if (!bip39.validateMnemonic(cleaned, wordlist)) return alert('Invalid seed phrase');
+  if (!bip39.validateMnemonic(cleaned, wordlist)) return toast('Invalid seed phrase');
   currentMnemonic = cleaned;
   isNewWallet = false;
-  show('password-screen');
+  openWallet();
 };
 
 let verifyStep = 0, verifyPositions = [];
@@ -86,129 +99,94 @@ function nextVerify() {
   document.querySelectorAll('.verify-opt').forEach(btn => {
     btn.onclick = () => {
       if (btn.dataset.word === word) { verifyStep++; nextVerify(); }
-      else alert('Incorrect. Check your backup.');
+      else toast('Incorrect. Check your backup.');
     };
   });
 }
 
-document.getElementById('finish-setup').onclick = () => show('password-screen');
+// Skip mandatory password — open wallet directly. Password is optional in Security.
+document.getElementById('finish-setup').onclick = () => openWallet();
 
-document.getElementById('set-password').onclick = async () => {
-  const p1 = document.getElementById('pw1').value;
-  const p2 = document.getElementById('pw2').value;
-  if (p1.length < 8 || p1 !== p2) return alert('Passwords must match (min 8 chars)');
+const setPwBtn = document.getElementById('set-password');
+if (setPwBtn) setPwBtn.onclick = async () => {
+  const p1 = document.getElementById('pw1')?.value || '';
+  const p2 = document.getElementById('pw2')?.value || '';
+  if (p1.length < 8 || p1 !== p2) return toast('Passwords must match (min 8 chars)');
   walletPassword = p1;
-  const encrypted = await encryptSeed(currentMnemonic, p1);
-  localStorage.setItem('mask_encrypted', JSON.stringify(encrypted));
-  localStorage.setItem('mask_account', accountIndex);
+  if (currentMnemonic) {
+    const encrypted = await encryptSeed(currentMnemonic, p1);
+    localStorage.setItem('mask_encrypted', JSON.stringify(encrypted));
+  }
+  toast('Password set');
   openWallet();
 };
 
 function openWallet() {
-  const ua = generateUA(accountIndex, addressIndex);
-  document.getElementById('ua').textContent = ua;
-  document.getElementById('qr').innerHTML = '';
-  new QRCode(document.getElementById('qr'), { text: ua, width: 140, height: 140, colorDark: '#f0762a', colorLight: '#05070d' });
-  document.getElementById('account-num').textContent = accountIndex + 1;
+  currentUA = generateUA(accountIndex, addressIndex);
+  const uaEl = document.getElementById('ua');
+  if (uaEl) uaEl.textContent = currentUA;
+  const qr = document.getElementById('qr');
+  if (qr && typeof QRCode !== 'undefined') {
+    qr.innerHTML = '';
+    new QRCode(qr, { text: currentUA, width: 160, height: 160, colorDark: '#05070d', colorLight: '#ffffff' });
+  }
   show('wallet');
 
-  let p = 0;
-  const bar = document.getElementById('progress-bar');
-  const status = document.getElementById('sync-status');
-  const interval = setInterval(() => {
-    p += 12;
-    bar.style.width = Math.min(p, 100) + '%';
-    if (p >= 100) {
-      clearInterval(interval);
-      status.textContent = 'Synced (demo)';
-      status.classList.remove('syncing','text-amber-400');
-      status.classList.add('text-green-400');
-      // New wallets get 1000 CYP bonus
-      const bonus = isNewWallet ? 1000 : 0;
-      const bal = (bonus + (Math.random() * 50)).toFixed(2);
-      document.getElementById('balance').innerHTML = `${bal} <span class="text-lg text-gray-400">CYP</span>`;
-      document.getElementById('usd').textContent = `\u2248 $${(bal * cypPrice).toFixed(2)} USD`;
-      if (isNewWallet) {
-        alert('Welcome! Your new wallet received a 1000 CYP bonus.');
-        isNewWallet = false;
-      }
-    }
-  }, 300);
+  const bonus = isNewWallet ? 1000 : 0;
+  const bal = (bonus + (isNewWallet ? 0 : 7240.12)).toFixed(2);
+  if (window.setBalanceDisplay) window.setBalanceDisplay(bal);
+  const asset = document.getElementById('asset-cyp');
+  if (asset) asset.textContent = bal;
+  if (isNewWallet) {
+    toast('Wallet created · 1,000 CYP');
+    isNewWallet = false;
+  }
+  localStorage.setItem('mask_has_wallet', '1');
+  localStorage.setItem('mask_account', accountIndex);
 }
 
-document.querySelectorAll('.tab').forEach(t => {
-  t.onclick = () => {
-    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
-    t.classList.add('active');
-    ['send','receive','history','settings'].forEach(id => document.getElementById(id).classList.add('hidden'));
-    document.getElementById(t.dataset.tab).classList.remove('hidden');
-  };
-});
-
-document.getElementById('copy-addr').onclick = () => {
-  navigator.clipboard.writeText(document.getElementById('ua').textContent);
-  alert('Address copied');
+const copyBtn = document.getElementById('copy-addr');
+if (copyBtn) copyBtn.onclick = () => {
+  navigator.clipboard.writeText(document.getElementById('ua').textContent).then(() => toast('Copied'));
 };
 
-document.getElementById('new-addr').onclick = () => {
+const newAddr = document.getElementById('new-addr');
+if (newAddr) newAddr.onclick = () => {
   addressIndex++;
   openWallet();
+  toast('New address');
 };
 
-document.getElementById('switch-account').onclick = () => {
+const switchAcct = document.getElementById('switch-account');
+if (switchAcct) switchAcct.onclick = () => {
   accountIndex = (accountIndex + 1) % 5;
   addressIndex = 0;
   openWallet();
 };
 
-document.getElementById('do-send').onclick = () => {
-  const to = document.getElementById('send-to').value;
-  const amt = document.getElementById('send-amt').value;
-  if (!to || !amt) return alert('Fill address and amount');
-  if (!confirm(`Send ${amt} CYP to ${to.slice(0,16)}... ?\n\nDemo mode for Cypher.`)) return;
-  alert('Cypher transaction prepared (demo).');
+const exportSeed = document.getElementById('export-seed');
+if (exportSeed) exportSeed.onclick = () => {
+  if (currentMnemonic && currentMnemonic !== 'restored') {
+    toast('Seed shown in next prompt');
+    alert('PAPER BACKUP\n\n' + currentMnemonic.split(' ').map((w,i) => (i+1) + '. ' + w).join('\n'));
+  } else toast('Restore from original seed to export');
 };
 
-// Paper backup
-document.getElementById('export-seed').onclick = () => {
-  const pw = prompt('Enter password to reveal seed for paper backup:');
-  if (pw === walletPassword && currentMnemonic && currentMnemonic !== 'restored-seed-placeholder') {
-    const text = 'MASK WALLET PAPER BACKUP\n\nWrite these 24 words on paper in order.\nStore offline in a safe place.\nNever share digitally or take a photo.\n\n' + currentMnemonic.split(' ').map((w,i) => (i+1) + '. ' + w).join('\n');
-    alert(text);
-    if (confirm('Copy seed phrase to clipboard for manual writing? (recommended to write by hand)')) {
-      navigator.clipboard.writeText(currentMnemonic);
-    }
-  } else if (pw === walletPassword) {
-    alert('Seed is locked. For full paper backup, restore from original seed or create a new wallet.');
-  } else alert('Wrong password');
-};
+const hw = document.getElementById('hw-wallet');
+if (hw) hw.onclick = () => toast('Hardware: Keystone (QR) or Ledger — seed never leaves device');
 
-document.getElementById('tor-toggle').onchange = (e) => {
-  alert(e.target.checked ? 'Tor routing enabled (demo).' : 'Tor disabled');
-};
-
-// Hardware wallet
-document.getElementById('hw-wallet').onclick = () => {
-  const choice = prompt('Add / Connect Hardware Wallet:\n\n1. Keystone (QR air-gapped)\n2. Ledger (Bluetooth)\n3. Other / Learn more\n\nEnter 1, 2, or 3:');
-  if (choice === '1') alert('Keystone:\n1. Open Keystone and select Cypher/Zcash account.\n2. Show QR of viewing key or address.\n3. Scan in Mask Wallet (coming soon).\nYour seed never leaves the device.');
-  else if (choice === '2') alert('Ledger:\n1. Install Cypher/Zcash app on Ledger.\n2. Pair via Bluetooth.\n3. Select account and sign on device.\nStructure ready for Cypher.');
-  else alert('Hardware wallets keep your seed offline.\nSupported path: Keystone (QR) and Ledger.\nUse paper backup as well.');
-};
-
-document.getElementById('clear-wallet').onclick = () => {
-  if (confirm('Erase wallet from this device? Make sure you have a paper backup of the seed.')) {
+const clear = document.getElementById('clear-wallet');
+if (clear) clear.onclick = () => {
+  if (confirm('Erase wallet from this device? Confirm you have the seed.')) {
     localStorage.clear();
     location.reload();
   }
 };
 
-if (localStorage.getItem('mask_encrypted')) {
-  const pw = prompt('Enter wallet password to unlock:');
-  if (pw) {
-    walletPassword = pw;
-    currentMnemonic = 'restored-seed-placeholder';
-    accountIndex = parseInt(localStorage.getItem('mask_account') || '0');
-    isNewWallet = false;
-    openWallet();
-  }
+// Auto-open if previously created (no password gate)
+if (localStorage.getItem('mask_has_wallet')) {
+  accountIndex = parseInt(localStorage.getItem('mask_account') || '0');
+  currentMnemonic = 'restored';
+  isNewWallet = false;
+  openWallet();
 }
