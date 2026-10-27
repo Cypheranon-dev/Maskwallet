@@ -136,9 +136,17 @@
           <button data-nav="swap" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-full flex items-center justify-center accent">⇄</div><span class="text-xs text-gray-500">Swap</span></button>
           <button data-action="dapp" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-full flex items-center justify-center accent">···</div><span class="text-xs text-gray-500">More</span></button>
         </div>
-        <div class="flex justify-between items-center text-xs text-gray-500 mb-2">
-          <span>My Assets</span>
-          <button data-action="activity" class="text-gray-500">Activity</button>
+        <div class="pill rounded-2xl p-4 mb-5 flex items-center justify-between">
+          <div><div class="text-sm font-medium">What Do You Own?</div><div class="text-xs text-gray-500">Tokenized Stock Holder FAQ</div></div>
+          <div class="text-2xl">▣</div>
+        </div>
+        <div class="flex justify-between items-center text-xs text-gray-500 mb-1">
+          <span class="font-medium text-sm text-gray-300">My Assets</span>
+          <button data-action="activity" class="text-gray-500">⇅</button>
+        </div>
+        <div class="flex justify-between text-[10px] text-gray-500 mb-2">
+          <span>Token/Price</span>
+          <span>Amount/Est. Value</span>
         </div>
         <div class="space-y-0">
           <button data-action="asset" class="w-full flex items-center justify-between py-3 border-b border-gray-800/60">
@@ -254,6 +262,13 @@
           <a href="https://cypheranon-dev.github.io/CypherBridge/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">CB</div><div class="text-[10px]">Bridge</div></a>
           <a href="https://cypheranon-dev.github.io/CypherDAO/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">DAO</div><div class="text-[10px]">DAO</div></a>
         </div>
+        <div class="text-sm font-medium mb-3 mt-2">Hot coins</div>
+        <div class="space-y-3 mb-5 text-sm">
+          <div class="flex justify-between"><span>ETH</span><span class="text-green-400">1.82% ~ 3.43% APY</span></div>
+          <div class="flex justify-between"><span>USDC</span><span class="text-green-400">2.46% ~ 4.1% APY</span></div>
+          <div class="flex justify-between"><span>CYPHER</span><span class="text-green-400">5.2% APY</span></div>
+          <div class="flex justify-between"><span>cBTC</span><span class="text-green-400">1.1% ~ 2.8% APY</span></div>
+        </div>
         <div class="text-sm font-medium mb-1">Oracle & Mining</div>
         <div class="text-xs text-gray-500 mb-3">Native AI oracle and Equihash pools.</div>
         <div class="grid grid-cols-4 gap-2">
@@ -324,7 +339,10 @@
           <div class="text-xs text-gray-500">Cloud Backup <span class="text-green-400">✓</span> &nbsp;|&nbsp; Manual Backup <span class="text-yellow-400">!</span></div>
         </div>
         <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm">Approvals <span class="text-gray-500">›</span></button>
-        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm mb-6">Security Audit <span class="text-gray-500">›</span></button>
+        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm">Security Audit <span class="text-gray-500">›</span></button>
+        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm">Address Book <span class="text-gray-500">›</span></button>
+        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm">Manage Wallets <span class="text-gray-500">›</span></button>
+        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm mb-6">Preferences <span class="text-gray-500">›</span></button>
         <div class="text-xs text-gray-500 tracking-wider mb-2">RECOVERY</div>
         <div class="pill rounded-xl p-4 flex justify-between items-center mb-6">
           <div><div class="flex items-center gap-2 text-sm"><span class="text-green-400">✓</span> Recovery phrase</div><div class="text-xs text-gray-500">Backed up · last verified today</div></div>
