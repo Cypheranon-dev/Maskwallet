@@ -29,6 +29,14 @@
     .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 1.1rem; height: 1.1rem; background: white; border-radius: 50%; transition: 0.2s; }
     .toggle:checked::after { left: 1.25rem; }
     #bottom-nav { background: #0c0e16 !important; border-top: 1px solid rgba(255,255,255,0.06) !important; }
+    body.light { background: #f7f8fa; color: #1a1a1a; }
+    body.light .card { background: #ffffff; border-color: #eef1f4; }
+    body.light .pill { background: #f4f6f8; border-color: #e8ecef; }
+    body.light .input { background: #f4f6f8; border-color: #e8ecef; color: #1a1a1a; }
+    body.light .icon-btn { background: #fff4ed; }
+    body.light #bottom-nav { background: #ffffff !important; border-top-color: #eef1f4 !important; }
+    body.light .text-gray-500 { color: #6b7280; }
+    body.light .border-gray-800 { border-color: #e5e7eb; }
     html, body, button, a, input, .icon-btn, .nav-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
     @media (min-width: 768px) {
       body { background: #03050a; }
@@ -90,7 +98,10 @@
             <div class="w-8 h-8 rounded-full bg-[#f0762a] text-[#05070d] flex items-center justify-center text-xs font-semibold">M</div>
             <div class="text-sm font-medium">Wallet A ▾</div>
           </div>
-          <button data-action="receive" class="bg-[#f0762a] text-[#05070d] text-xs px-3 py-1.5 rounded-full font-medium">Receive</button>
+          <div class="flex items-center gap-2">
+            <button id="theme-toggle" class="w-8 h-8 rounded-full pill flex items-center justify-center text-sm" title="Toggle theme">☀</button>
+            <button data-action="receive" class="bg-[#f0762a] text-[#05070d] text-xs px-3 py-1.5 rounded-full font-medium">Receive</button>
+          </div>
         </div>
         <div class="pill rounded-full px-4 py-2.5 flex items-center gap-2 text-sm text-gray-500 mb-5">
           <span>⌕</span> Search coin/contract
@@ -414,6 +425,18 @@
       showView('security');
     };
   </script>
+<script>
+    const themeBtn = document.getElementById('theme-toggle');
+    if (themeBtn) {
+      const saved = localStorage.getItem('mask_theme');
+      if (saved === 'light') { document.body.classList.add('light'); themeBtn.textContent = '☾'; }
+      themeBtn.onclick = () => {
+        const isLight = document.body.classList.toggle('light');
+        themeBtn.textContent = isLight ? '☾' : '☀';
+        localStorage.setItem('mask_theme', isLight ? 'light' : 'dark');
+      };
+    }
+</script>
 </body>
 </html>
 
