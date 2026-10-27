@@ -232,20 +232,34 @@
         </div>
       </div>
 
-      <!-- dApp Browser -->
-      <div id="view-dapp" class="hidden flex-1 p-4">
-        <div class="flex items-center mb-4"><button data-action="home" class="text-gray-500 mr-3">←</button><span class="font-medium">dApp Browser</span></div>
-        <div class="pill rounded-xl px-4 py-3 flex items-center gap-2 text-sm text-gray-500 mb-4"><span>⌕</span> Search or enter dApp URL <span class="ml-auto accent">◆</span></div>
-        <div class="text-xs text-gray-500 mb-2">Cypher ecosystem</div>
-        <div class="grid grid-cols-2 gap-2 mb-4">
-          <a href="https://cypheranon-dev.github.io/Maskswap/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">MS</div><div class="text-sm font-medium">MaskSwap</div><div class="text-xs text-gray-500">Shielded DEX</div></a>
-          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">SL</div><div class="text-sm font-medium">ShieldLend</div><div class="text-xs text-gray-500">Lend & borrow</div></a>
-          <a href="https://cypheranon-dev.github.io/CypherBridge/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">CB</div><div class="text-sm font-medium">Cypher Bridge</div><div class="text-xs text-gray-500">Cross-chain</div></a>
-          <a href="https://cypheranon-dev.github.io/CypherDAO/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">DAO</div><div class="text-sm font-medium">Cypher DAO</div><div class="text-xs text-gray-500">Governance + Mining</div></a>
-          <a href="https://cypheranon-dev.github.io/CypherOracle/" class="pill rounded-xl p-4"><div class="w-8 h-8 rounded-lg bg-[#2a2018] flex items-center justify-center accent text-xs mb-2">OR</div><div class="text-sm font-medium">Cypher Oracle</div><div class="text-xs text-gray-500">Native AI · stake-weighted</div></a>
-
+      <!-- Discover (KuCoin style) -->
+      <div id="view-dapp" class="hidden flex-1 p-4 overflow-auto">
+        <div class="flex gap-4 text-sm mb-4">
+          <button class="accent font-medium border-b-2 border-[#f0762a] pb-1">DApps</button>
+          <button class="text-gray-500">Earn</button>
+          <button class="text-gray-500">Airdrops</button>
         </div>
-        <div class="pill rounded-xl p-3 text-xs text-gray-500">Every connection request is scanned for malicious contracts and lookalike addresses before you ever see a prompt to sign.</div>
+        <div class="pill rounded-full px-4 py-2.5 flex items-center gap-2 text-sm text-gray-500 mb-4">
+          <span>⌕</span> Search DApps or enter URL
+        </div>
+        <div class="flex gap-4 text-sm mb-4">
+          <button class="accent font-medium border-b-2 border-[#f0762a] pb-1">Featured</button>
+          <button class="text-gray-500">Explore</button>
+        </div>
+        <div class="text-sm font-medium mb-1">DeFi Tools</div>
+        <div class="text-xs text-gray-500 mb-3">Your must-have tools for Cypher.</div>
+        <div class="grid grid-cols-4 gap-2 mb-5">
+          <a href="https://cypheranon-dev.github.io/Maskswap/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">MS</div><div class="text-[10px]">MaskSwap</div></a>
+          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">SL</div><div class="text-[10px]">ShieldLend</div></a>
+          <a href="https://cypheranon-dev.github.io/CypherBridge/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">CB</div><div class="text-[10px]">Bridge</div></a>
+          <a href="https://cypheranon-dev.github.io/CypherDAO/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">DAO</div><div class="text-[10px]">DAO</div></a>
+        </div>
+        <div class="text-sm font-medium mb-1">Oracle & Mining</div>
+        <div class="text-xs text-gray-500 mb-3">Native AI oracle and Equihash pools.</div>
+        <div class="grid grid-cols-4 gap-2">
+          <a href="https://cypheranon-dev.github.io/CypherOracle/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">OR</div><div class="text-[10px]">Oracle</div></a>
+          <a href="https://cypheranon-dev.github.io/CypherDAO/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">⛏</div><div class="text-[10px]">Mining</div></a>
+        </div>
       </div>
 
       <!-- Viewing Key -->
