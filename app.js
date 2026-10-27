@@ -8,6 +8,9 @@ let currentMnemonic = null;
 let walletPassword = null;
 let addressIndex = 0;
 let accountIndex = 0;
+let wallets = JSON.parse(localStorage.getItem('mask_wallets') || '[]');
+function saveWallets() { localStorage.setItem('mask_wallets', JSON.stringify(wallets)); }
+function walletLabel(i) { return 'Wallet ' + String.fromCharCode(65 + i); }
 let cypPrice = 0.25;
 let isNewWallet = false;
 let currentUA = '';
@@ -122,7 +125,15 @@ if (setPwBtn) setPwBtn.onclick = async () => {
 };
 
 function openWallet() {
+  if (!wallets[accountIndex]) {
+    wallets[accountIndex] = { name: walletLabel(accountIndex), ua: '', bal: isNewWallet ? 1000 : 7240.12 };
+  }
+  if (currentMnemonic && currentMnemonic !== 'restored') wallets[accountIndex].seed = currentMnemonic;
   currentUA = generateUA(accountIndex, addressIndex);
+  wallets[accountIndex].ua = currentUA;
+  saveWallets();
+  const sw = document.getElementById('wallet-switcher');
+  if (sw) sw.textContent = walletLabel(accountIndex) + ' ▾';
   const uaEl = document.getElementById('ua');
   if (uaEl) uaEl.textContent = currentUA;
   const qr = document.getElementById('qr');
