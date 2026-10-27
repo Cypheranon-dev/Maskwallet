@@ -47,8 +47,8 @@
 
     <div id="seed-screen" class="p-6 hidden flex-1">
       <div class="card rounded-2xl p-6">
-        <h2 class="text-lg font-semibold mb-1">Backup seed</h2>
-        <p class="text-xs text-gray-400 mb-4">Write these 24 words on paper. Only recovery method.</p>
+        <h2 class="text-lg font-semibold mb-1">Back Up Wallet</h2>
+        <p class="text-xs text-gray-400 mb-4">Write down the following words in order and keep them safe. Do not take screenshots. Anyone with this phrase controls the wallet.</p>
         <div id="seed-words" class="grid grid-cols-3 gap-1.5 mb-4 text-xs"></div>
         <button id="copy-seed" class="w-full py-2 rounded-lg border border-gray-700 text-sm mb-3">Copy phrase</button>
         <div id="verify-section" class="hidden">
@@ -74,34 +74,39 @@
 
     <!-- Main -->
     <div id="wallet" class="hidden flex-1 flex flex-col">
-      <!-- Home -->
+      <!-- Home (KuCoin Web3 style) -->
       <div id="view-home" class="flex-1 p-4">
-        <div class="flex justify-between items-center text-xs mb-6">
-          <span class="flex items-center gap-1.5 text-gray-400"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Online · Local node</span>
-          <span class="accent">Shielded mode</span>
+        <div class="pill rounded-xl px-4 py-2.5 flex items-center gap-2 text-sm text-gray-500 mb-5">
+          <span>⌕</span> Search coin or contract
         </div>
-        <div class="text-xs text-gray-500 mb-1">Total balance</div>
+        <div class="flex justify-between items-center text-xs mb-4">
+          <span class="flex items-center gap-1.5 text-gray-400"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Online · Local node</span>
+          <span class="accent">Shielded</span>
+        </div>
+        <div class="text-xs text-gray-500 mb-1">Total assets</div>
         <div class="flex items-center gap-2 mb-1">
-          <div class="text-3xl font-semibold" id="balance-display">••••••••</div>
+          <div class="text-4xl font-semibold tracking-tight" id="balance-display">••••••••</div>
           <button id="toggle-balance" class="text-gray-500"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg></button>
         </div>
         <div class="text-xs accent mb-6">▲ 2.4% today</div>
         <div class="flex justify-around mb-8">
-          <button data-action="send" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">↑</div><span class="text-xs text-gray-400">Send</span></button>
-          <button data-action="receive" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">↓</div><span class="text-xs text-gray-400">Receive</span></button>
-          <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">⇄</div><span class="text-xs text-gray-400">Swap</span></a>
-          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent">⌂</div><span class="text-xs text-gray-400">Earn</span></a>
+          <button data-action="send" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-full flex items-center justify-center accent">↑</div><span class="text-xs text-gray-400">Send</span></button>
+          <button data-action="receive" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-full flex items-center justify-center accent">↓</div><span class="text-xs text-gray-400">Receive</span></button>
+          <button data-nav="swap" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-full flex items-center justify-center accent">⇄</div><span class="text-xs text-gray-400">Swap</span></button>
+          <button data-action="dapp" class="flex flex-col items-center gap-1.5"><div class="icon-btn w-12 h-12 rounded-full flex items-center justify-center accent">···</div><span class="text-xs text-gray-400">More</span></button>
         </div>
-        <div class="text-xs text-gray-500 mb-3">Assets</div>
-        <div class="space-y-1">
-          <button data-action="asset" class="w-full flex items-center justify-between py-3">
-            <div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs">C</div><div class="text-left"><div class="text-sm">Cypher</div><div class="text-xs text-gray-500">CYPHER</div></div></div>
-            <div class="text-right"><div class="text-sm" id="asset-cyp">0.00</div><div class="text-xs accent">+3.1%</div></div>
+        <div class="flex justify-between items-center text-xs text-gray-500 mb-2">
+          <span>My Assets</span>
+          <button data-action="activity" class="text-gray-500">Activity</button>
+        </div>
+        <div class="space-y-0">
+          <button data-action="asset" class="w-full flex items-center justify-between py-3 border-b border-gray-800/60">
+            <div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-[#2a2018] flex items-center justify-center text-xs accent">C</div><div class="text-left"><div class="text-sm font-medium">Cypher</div><div class="text-xs text-gray-500">$1.4723 <span class="accent">+3.1%</span></div></div></div>
+            <div class="text-right"><div class="text-sm" id="asset-cyp">0.00</div><div class="text-xs text-gray-500" id="asset-cyp-usd">$0.00</div></div>
           </button>
-          <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs">B</div><div><div class="text-sm">Wrapped BTC</div><div class="text-xs text-gray-500">cBTC</div></div></div><div class="text-right"><div class="text-sm">0.0412</div><div class="text-xs text-blue-400">-0.8%</div></div></div>
-          <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs">E</div><div><div class="text-sm">Wrapped ETH</div><div class="text-xs text-gray-500">cETH</div></div></div><div class="text-right"><div class="text-sm">1.228</div><div class="text-xs accent">+1.5%</div></div></div>
+          <div class="flex items-center justify-between py-3 border-b border-gray-800/60"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center text-xs">B</div><div><div class="text-sm font-medium">cBTC</div><div class="text-xs text-gray-500">$67,420 <span class="text-blue-400">-0.8%</span></div></div></div><div class="text-right"><div class="text-sm">0.0412</div><div class="text-xs text-gray-500">$2,778</div></div></div>
+          <div class="flex items-center justify-between py-3"><div class="flex items-center gap-3"><div class="w-9 h-9 rounded-full bg-gray-800 flex items-center justify-center text-xs">E</div><div><div class="text-sm font-medium">cETH</div><div class="text-xs text-gray-500">$2,481 <span class="accent">+1.5%</span></div></div></div><div class="text-right"><div class="text-sm">1.228</div><div class="text-xs text-gray-500">$3,047</div></div></div>
         </div>
-        <button data-action="activity" class="w-full text-left text-xs text-gray-500 mt-4">View activity →</button>
       </div>
 
       <!-- Send -->
@@ -277,10 +282,10 @@
 
     <!-- Bottom nav -->
     <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0c0e16] border-t border-gray-800 flex justify-around py-3 text-xs hidden">
-      <button data-nav="home" class="nav-item active flex flex-col items-center gap-1 text-gray-500">Home</button>
+      <button data-nav="home" class="nav-item active flex flex-col items-center gap-1 text-gray-500">Wallet</button>
       <button data-nav="swap" class="nav-item flex flex-col items-center gap-1 text-gray-500">Swap</button>
-      <button data-nav="lend" class="nav-item flex flex-col items-center gap-1 text-gray-500">Lend</button>
-      <button data-nav="dapp" class="nav-item flex flex-col items-center gap-1 text-gray-500">dApps</button>
+      <button data-nav="lend" class="nav-item flex flex-col items-center gap-1 text-gray-500">Earn</button>
+      <button data-nav="dapp" class="nav-item flex flex-col items-center gap-1 text-gray-500">Discover</button>
       <button data-nav="security" class="nav-item flex flex-col items-center gap-1 text-gray-500">Security</button>
     </nav>
   </div>
@@ -395,4 +400,5 @@
   </script>
 </body>
 </html>
+
 
