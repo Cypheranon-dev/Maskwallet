@@ -178,9 +178,11 @@ if (newAddr) newAddr.onclick = () => {
 
 const switchAcct = document.getElementById('switch-account');
 if (switchAcct) switchAcct.onclick = () => {
-  accountIndex = (accountIndex + 1) % 5;
+  accountIndex = wallets.length;
   addressIndex = 0;
+  isNewWallet = true;
   openWallet();
+  toast('Added ' + walletLabel(accountIndex));
 };
 
 const exportSeed = document.getElementById('export-seed');
