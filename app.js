@@ -59,8 +59,13 @@ function renderSeed(mnemonic) {
 }
 
 let seedBits = 256;
-document.getElementById('len-12').onclick = () => { seedBits = 128; document.getElementById('len-12').classList.add('accent','border','border-[#f0762a]'); document.getElementById('len-24').classList.remove('accent','border','border-[#f0762a]'); };
-document.getElementById('len-24').onclick = () => { seedBits = 256; document.getElementById('len-24').classList.add('accent','border','border-[#f0762a]'); document.getElementById('len-12').classList.remove('accent','border','border-[#f0762a]'); };
+document.querySelectorAll('.len-btn').forEach(btn => {
+  btn.onclick = () => {
+    seedBits = parseInt(btn.dataset.bits);
+    document.querySelectorAll('.len-btn').forEach(b => b.classList.remove('accent','border','border-[#f0762a]'));
+    btn.classList.add('accent','border','border-[#f0762a]');
+  };
+});
 
 document.getElementById('create-new').onclick = async () => {
   currentMnemonic = bip39.generateMnemonic(wordlist, seedBits);
