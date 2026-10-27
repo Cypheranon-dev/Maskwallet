@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
   <title>Mask Wallet</title>
   <link rel="manifest" href="/manifest.json" />
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='28' fill='none' stroke='%23f0762a' stroke-width='3'/><path d='M46 18 L32 18 A14 14 0 0 0 32 46 L46 46' fill='none' stroke='%23f0762a' stroke-width='5' stroke-linecap='round' stroke-linejoin='round'/><rect x='28' y='12' width='4' height='6' fill='%23f0762a'/><rect x='36' y='12' width='4' height='6' fill='%23f0762a'/><rect x='28' y='46' width='4' height='6' fill='%23f0762a'/><rect x='36' y='46' width='4' height='6' fill='%23f0762a'/></svg>" />
@@ -29,10 +29,20 @@
     .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 1.1rem; height: 1.1rem; background: white; border-radius: 50%; transition: 0.2s; }
     .toggle:checked::after { left: 1.25rem; }
     #bottom-nav { background: #0c0e16 !important; border-top: 1px solid rgba(255,255,255,0.06) !important; }
+    html, body, button, a, input, .icon-btn, .nav-item { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+    @media (min-width: 768px) {
+      body { background: #03050a; }
+      .app-shell { max-width: 28rem; margin: 1.5rem auto; min-height: calc(100vh - 3rem); border-radius: 1.5rem; border: 1px solid rgba(255,255,255,0.08); overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.5); }
+      #bottom-nav { max-width: 28rem; border-radius: 0 0 1.5rem 1.5rem; }
+    }
+    @media (min-width: 1024px) {
+      .app-shell { max-width: 26rem; margin-top: 2rem; }
+      #bottom-nav { max-width: 26rem; }
+    }
   </style>
 </head>
 <body class="min-h-screen antialiased">
-  <div class="max-w-md mx-auto min-h-screen flex flex-col pb-20">
+  <div class="app-shell max-w-md mx-auto min-h-screen flex flex-col pb-20">
     <!-- Onboarding -->
     <div id="onboard" class="flex-1 flex flex-col justify-center items-center p-6 text-center">
       <div class="w-14 h-14 rounded-2xl bg-[#1a1d28] flex items-center justify-center mb-4 accent text-2xl">◆</div>
