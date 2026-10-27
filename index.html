@@ -310,7 +310,21 @@
 
       <!-- Security -->
       <div id="view-security" class="hidden flex-1 p-4 overflow-auto">
-        <div class="text-lg font-semibold mb-6">Security & Privacy</div>
+        <div class="flex items-center mb-4"><button data-action="home" class="text-gray-500 mr-3">←</button></div>
+        <h1 class="text-2xl font-semibold mb-6">Security</h1>
+        <button data-action="vkey" class="w-full flex items-center justify-between py-4 border-b border-gray-800">
+          <span class="text-sm">Authentication Method</span>
+          <span class="text-xs text-gray-500">Biometric ›</span>
+        </button>
+        <div class="py-4 border-b border-gray-800">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-sm font-medium">Wallet Backup</span>
+            <span class="text-gray-500">›</span>
+          </div>
+          <div class="text-xs text-gray-500">Cloud Backup <span class="text-green-400">✓</span> &nbsp;|&nbsp; Manual Backup <span class="text-yellow-400">!</span></div>
+        </div>
+        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm">Approvals <span class="text-gray-500">›</span></button>
+        <button class="w-full flex items-center justify-between py-4 border-b border-gray-800 text-sm mb-6">Security Audit <span class="text-gray-500">›</span></button>
         <div class="text-xs text-gray-500 tracking-wider mb-2">RECOVERY</div>
         <div class="pill rounded-xl p-4 flex justify-between items-center mb-6">
           <div><div class="flex items-center gap-2 text-sm"><span class="text-green-400">✓</span> Recovery phrase</div><div class="text-xs text-gray-500">Backed up · last verified today</div></div>
