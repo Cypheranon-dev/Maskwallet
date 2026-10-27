@@ -12,52 +12,41 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
-    :root { --bg: #05070d; --card: rgba(12, 14, 22, 0.85); --border: rgba(240, 118, 42, 0.25); --accent: #f0762a; --text: #e8e6e1; --muted: #9ca3af; }
-    body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; }
-    .card { background: var(--card); backdrop-filter: blur(16px); border: 1px solid var(--border); }
-    .accent { color: var(--accent); }
-    .btn { background: var(--accent); color: #05070d; font-weight: 600; }
+    body { background: #05070d; color: #e8e6e1; font-family: system-ui, -apple-system, sans-serif; }
+    .card { background: #0c0e16; border: 1px solid rgba(255,255,255,0.06); }
+    .accent { color: #f0762a; }
+    .btn { background: #f0762a; color: #05070d; font-weight: 600; }
     .btn:hover { background: #ff8a3d; }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-    .tab.active { color: var(--accent); border-bottom: 2px solid var(--accent); }
-    .input { background: rgba(0,0,0,0.4); border: 1px solid #374151; }
-    .input:focus { outline: none; border-color: var(--accent); }
-    .seed-word { background: #1c3d32; border: 1px solid rgba(143, 217, 182, 0.15); }
-    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background: #1c3d32; color: #e8e6e1; padding: 0.75rem 1.25rem; border-radius: 0.75rem; font-size: 0.875rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 50; }
+    .pill { background: #1a1d28; border: 1px solid rgba(255,255,255,0.08); }
+    .input { background: #1a1d28; border: 1px solid rgba(255,255,255,0.08); }
+    .input:focus { outline: none; border-color: #f0762a; }
+    .nav-item.active { color: #f0762a; }
+    .toast { position: fixed; bottom: 5rem; left: 50%; transform: translateX(-50%); background: #1c3d32; padding: 0.75rem 1.25rem; border-radius: 0.75rem; font-size: 0.875rem; opacity: 0; transition: opacity 0.2s; pointer-events: none; z-index: 50; }
     .toast.show { opacity: 1; }
+    .seed-word { background: #1c3d32; border: 1px solid rgba(143, 217, 182, 0.15); }
+    .icon-btn { background: #1a1d28; }
+    .toggle { appearance: none; width: 2.5rem; height: 1.4rem; background: #374151; border-radius: 999px; position: relative; cursor: pointer; }
+    .toggle:checked { background: #f0762a; }
+    .toggle::after { content: ''; position: absolute; top: 2px; left: 2px; width: 1.1rem; height: 1.1rem; background: white; border-radius: 50%; transition: 0.2s; }
+    .toggle:checked::after { left: 1.25rem; }
   </style>
 </head>
 <body class="min-h-screen antialiased">
-  <div class="max-w-md mx-auto px-4 py-6 min-h-screen flex flex-col">
-    <header class="flex items-center justify-between mb-6">
-      <div class="flex items-center gap-2">
-        <svg width="28" height="28" viewBox="0 0 64 64" aria-hidden="true">
-          <circle cx="32" cy="32" r="28" fill="none" stroke="#f0762a" stroke-width="3"/>
-          <path d="M46 18 L32 18 A14 14 0 0 0 32 46 L46 46" fill="none" stroke="#f0762a" stroke-width="5" stroke-linecap="round"/>
-          <rect x="28" y="12" width="4" height="6" fill="#f0762a"/>
-          <rect x="36" y="12" width="4" height="6" fill="#f0762a"/>
-          <rect x="28" y="46" width="4" height="6" fill="#f0762a"/>
-          <rect x="36" y="46" width="4" height="6" fill="#f0762a"/>
-        </svg>
-        <span class="text-lg font-semibold">Mask</span>
-      </div>
-      <div class="flex gap-3 text-xs">
-        <a href="https://cypheranon-dev.github.io/Maskswap/" class="text-gray-500 hover:text-white">Swap</a>
-        <a href="https://cypheranon-dev.github.io/ShieldLend/" class="text-gray-500 hover:text-white">Lend</a>
-      </div>
-    </header>
-
-    <div id="app" class="flex-1 flex flex-col">
-      <div id="onboard" class="card rounded-2xl p-6 flex-1 flex flex-col justify-center">
+  <div class="max-w-md mx-auto min-h-screen flex flex-col pb-20">
+    <!-- Onboarding screens stay functional -->
+    <div id="onboard" class="p-6 flex-1 flex flex-col justify-center">
+      <div class="card rounded-2xl p-6">
         <h1 class="text-xl font-semibold mb-1">Create wallet</h1>
-        <p class="text-sm text-gray-400 mb-6">Self-custodial Cypher wallet. New accounts receive 1,000 CYP.</p>
+        <p class="text-sm text-gray-400 mb-6">Self-custodial. New accounts receive 1,000 CYP.</p>
         <button id="create-new" class="btn w-full py-3 rounded-xl mb-3">Create new wallet</button>
         <button id="restore" class="w-full py-3 rounded-xl border border-gray-700 text-sm">Restore from seed</button>
       </div>
+    </div>
 
-      <div id="seed-screen" class="card rounded-2xl p-6 hidden flex-1">
+    <div id="seed-screen" class="p-6 hidden flex-1">
+      <div class="card rounded-2xl p-6">
         <h2 class="text-lg font-semibold mb-1">Backup seed</h2>
-        <p class="text-xs text-gray-400 mb-4">Write these 24 words on paper. This is the only recovery method.</p>
+        <p class="text-xs text-gray-400 mb-4">Write these 24 words on paper. Only recovery method.</p>
         <div id="seed-words" class="grid grid-cols-3 gap-1.5 mb-4 text-xs"></div>
         <button id="copy-seed" class="w-full py-2 rounded-lg border border-gray-700 text-sm mb-3">Copy phrase</button>
         <div id="verify-section" class="hidden">
@@ -67,70 +56,190 @@
         <button id="start-verify" class="btn w-full py-3 rounded-xl">I have written it down</button>
         <button id="finish-setup" class="btn w-full py-3 rounded-xl hidden">Continue</button>
       </div>
+    </div>
 
-      <div id="password-screen" class="card rounded-2xl p-6 hidden flex-1">
+    <div id="password-screen" class="p-6 hidden flex-1">
+      <div class="card rounded-2xl p-6">
         <h2 class="text-lg font-semibold mb-1">Set password</h2>
         <p class="text-xs text-gray-400 mb-4">Encrypts the seed on this device.</p>
         <input id="pw1" type="password" placeholder="Password" class="input w-full rounded-lg px-3 py-2.5 text-sm mb-2" />
         <input id="pw2" type="password" placeholder="Confirm" class="input w-full rounded-lg px-3 py-2.5 text-sm mb-4" />
         <button id="set-password" class="btn w-full py-3 rounded-xl">Encrypt and open</button>
       </div>
+    </div>
 
-      <div id="wallet" class="hidden flex-1 flex flex-col">
-        <div class="card rounded-2xl p-5 mb-3">
-          <div class="flex justify-between text-xs text-gray-500 mb-1">
-            <span>Balance</span>
-            <span id="sync-status">Ready</span>
-          </div>
-          <div class="text-3xl font-semibold" id="balance">0.00 <span class="text-base text-gray-400">CYP</span></div>
-          <div class="text-sm text-gray-500 mt-0.5" id="usd">$0.00</div>
+    <!-- Main wallet -->
+    <div id="wallet" class="hidden flex-1 flex flex-col">
+      <!-- Home -->
+      <div id="view-home" class="flex-1 p-4">
+        <div class="flex justify-between items-center text-xs mb-6">
+          <span class="flex items-center gap-1.5 text-gray-400"><span class="w-1.5 h-1.5 rounded-full bg-green-400"></span> Online · Local node</span>
+          <span class="accent flex items-center gap-1"><svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6z"/></svg> Shielded mode</span>
         </div>
 
-        <div class="card rounded-xl p-4 mb-3">
-          <div class="flex justify-between text-xs text-gray-500 mb-2">
-            <span>Prices</span>
-            <span id="price-status"></span>
-          </div>
-          <div id="price-list" class="grid grid-cols-4 gap-2 text-xs text-center"></div>
+        <div class="text-xs text-gray-500 mb-1">Total balance</div>
+        <div class="flex items-center gap-2 mb-1">
+          <div class="text-3xl font-semibold tracking-tight" id="balance-display">••••••••</div>
+          <button id="toggle-balance" class="text-gray-500">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+          </button>
+        </div>
+        <div class="text-xs accent mb-6" id="usd-change">▲ 2.4% today</div>
+
+        <div class="flex justify-around mb-8">
+          <button data-action="send" class="flex flex-col items-center gap-1.5">
+            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg></div>
+            <span class="text-xs text-gray-400">Send</span>
+          </button>
+          <button data-action="receive" class="flex flex-col items-center gap-1.5">
+            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg></div>
+            <span class="text-xs text-gray-400">Receive</span>
+          </button>
+          <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1.5">
+            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg></div>
+            <span class="text-xs text-gray-400">Swap</span>
+          </a>
+          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1.5">
+            <div class="icon-btn w-12 h-12 rounded-xl flex items-center justify-center accent"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg></div>
+            <span class="text-xs text-gray-400">Earn</span>
+          </a>
         </div>
 
-        <div class="card rounded-xl p-4 mb-3">
-          <div class="flex justify-between items-center mb-1">
-            <span class="text-xs text-gray-500">Address</span>
-            <button id="copy-addr" class="text-xs accent">Copy</button>
-          </div>
-          <p id="ua" class="text-xs font-mono break-all text-gray-300"></p>
-          <div id="qr" class="flex justify-center mt-3"></div>
-        </div>
-
-        <div class="flex border-b border-gray-800 mb-3 text-sm">
-          <button data-tab="send" class="tab flex-1 py-2 text-center text-gray-400">Send</button>
-          <button data-tab="receive" class="tab flex-1 py-2 text-center active">Receive</button>
-          <button data-tab="history" class="tab flex-1 py-2 text-center text-gray-400">History</button>
-          <button data-tab="settings" class="tab flex-1 py-2 text-center text-gray-400">Settings</button>
-        </div>
-
-        <div id="tab-content" class="flex-1">
-          <div id="send" class="hidden space-y-2">
-            <input id="send-to" placeholder="Recipient address" class="input w-full rounded-lg px-3 py-2.5 text-sm" />
-            <input id="send-amt" type="number" step="any" placeholder="Amount CYP" class="input w-full rounded-lg px-3 py-2.5 text-sm" />
-            <input id="send-memo" placeholder="Memo (optional)" class="input w-full rounded-lg px-3 py-2.5 text-sm" />
-            <button id="do-send" class="btn w-full py-3 rounded-xl">Send</button>
-          </div>
-          <div id="receive" class="text-sm text-gray-400">
-            <p class="mb-3">Share this address to receive CYP.</p>
-            <button id="new-addr" class="w-full py-2 rounded-lg border border-gray-700 text-sm">New address</button>
-          </div>
-          <div id="history" class="hidden text-sm text-gray-500 text-center py-8">No transactions</div>
-          <div id="settings" class="hidden space-y-2 text-sm">
-            <button id="switch-account" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">New account</button>
-            <button id="export-seed" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Export seed</button>
-            <button id="hw-wallet" class="w-full py-2.5 rounded-lg border border-gray-700 text-left px-3">Hardware wallet</button>
-            <button id="clear-wallet" class="w-full py-2.5 rounded-lg border border-red-900/50 text-red-400 text-left px-3">Remove from device</button>
+        <div class="text-xs text-gray-500 mb-3">Assets</div>
+        <div class="space-y-1" id="assets-list">
+          <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-3">
+              <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center text-xs font-medium">C</div>
+              <div><div class="text-sm">Cypher</div><div class="text-xs text-gray-500">CYPHER</div></div>
+            </div>
+            <div class="text-right">
+              <div class="text-sm" id="asset-cyp">0.00</div>
+              <div class="text-xs accent">+3.1%</div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Send -->
+      <div id="view-send" class="hidden flex-1 p-4 flex flex-col">
+        <div class="flex items-center mb-6">
+          <button data-action="home" class="text-gray-400 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+          <span class="flex-1 text-center font-medium">Send</span>
+          <div class="w-5"></div>
+        </div>
+        <label class="text-xs text-gray-500 mb-1">To</label>
+        <input id="send-to" placeholder="cph1q... or contact" class="input w-full rounded-xl px-4 py-3 text-sm mb-4" />
+        <label class="text-xs text-gray-500 mb-1">Privacy level</label>
+        <div class="flex gap-2 mb-2">
+          <button id="priv-shielded" class="flex-1 py-2.5 rounded-xl text-sm font-medium bg-[#2a2018] text-[#f0762a]">Shielded</button>
+          <button id="priv-transparent" class="flex-1 py-2.5 rounded-xl text-sm text-gray-400 pill">Transparent</button>
+        </div>
+        <p class="text-xs text-gray-500 mb-4">Recipient, amount and memo are hidden on-chain. Reveal only with a viewing key you control.</p>
+        <label class="text-xs text-gray-500 mb-1">Amount</label>
+        <div class="input rounded-xl px-4 py-3 flex items-center mb-1">
+          <input id="send-amt" type="number" step="any" placeholder="0.00" class="bg-transparent flex-1 text-2xl outline-none" />
+          <span class="text-xs text-gray-400 pill px-2 py-1 rounded">CYPHER</span>
+        </div>
+        <div class="flex justify-between text-xs mb-4">
+          <span class="text-gray-500" id="send-usd">≈ $0.00</span>
+          <button id="send-max" class="accent">Max</button>
+        </div>
+        <div class="flex justify-between text-xs text-gray-500 mb-4">
+          <span>Network fee</span>
+          <span>0.0004 CYPHER</span>
+        </div>
+        <div class="pill rounded-xl p-3 flex items-center justify-between mb-6">
+          <div>
+            <div class="text-sm flex items-center gap-2"><span class="accent">▣</span> Sign offline</div>
+            <div class="text-xs text-gray-500">Export as QR for your air-gapped signer</div>
+          </div>
+          <input type="checkbox" class="toggle" id="offline-sign" />
+        </div>
+        <button id="do-send" class="btn w-full py-4 rounded-2xl mt-auto">Review & Sign</button>
+      </div>
+
+      <!-- Receive -->
+      <div id="view-receive" class="hidden flex-1 p-4 flex flex-col">
+        <div class="flex items-center mb-6">
+          <button data-action="home" class="text-gray-400 mr-3"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg></button>
+          <span class="flex-1 text-center font-medium">Receive</span>
+          <div class="w-5"></div>
+        </div>
+        <div class="card rounded-2xl p-5 text-center">
+          <p class="text-xs text-gray-500 mb-3">Share this address to receive private CYPHER</p>
+          <p id="ua" class="text-xs font-mono break-all text-gray-300 mb-4"></p>
+          <div id="qr" class="flex justify-center mb-4"></div>
+          <button id="copy-addr" class="w-full py-2 rounded-lg border border-gray-700 text-sm mb-2">Copy address</button>
+          <button id="new-addr" class="w-full py-2 rounded-lg border border-gray-700 text-sm">New address</button>
+        </div>
+      </div>
+
+      <!-- Security -->
+      <div id="view-security" class="hidden flex-1 p-4 overflow-auto">
+        <div class="text-lg font-semibold mb-6">Security & Privacy</div>
+        <div class="text-xs text-gray-500 tracking-wider mb-2">RECOVERY</div>
+        <div class="pill rounded-xl p-4 flex justify-between items-center mb-6">
+          <div>
+            <div class="flex items-center gap-2 text-sm"><span class="text-green-400">✓</span> Recovery phrase</div>
+            <div class="text-xs text-gray-500">Backed up · last verified today</div>
+          </div>
+          <button id="export-seed" class="accent text-sm">Verify</button>
+        </div>
+        <div class="text-xs text-gray-500 tracking-wider mb-2">VIEWING KEYS</div>
+        <div class="pill rounded-xl p-4 mb-3">
+          <p class="text-xs text-gray-400 mb-3">Share a viewing key to prove specific transactions — for audits or exchange KYC — without exposing your full history.</p>
+          <div class="text-xs space-y-2">
+            <div class="flex justify-between py-1 border-b border-gray-800"><span>kucoin-ramp.vk</span><span class="text-gray-500">Active</span></div>
+            <div class="flex justify-between py-1"><span>tax-2026.vk</span><span class="text-gray-500">Active</span></div>
+          </div>
+        </div>
+        <button class="accent text-sm mb-6">+ Generate new viewing key</button>
+        <div class="text-xs text-gray-500 tracking-wider mb-2">NETWORK</div>
+        <div class="pill rounded-xl p-4 mb-2">
+          <div class="text-sm">Node</div>
+          <div class="text-xs text-gray-500">Local full node running on this device</div>
+        </div>
+        <div class="pill rounded-xl p-4 flex items-center justify-between mb-6">
+          <div>
+            <div class="text-sm flex items-center gap-2"><span class="accent">▣</span> Offline mode</div>
+            <div class="text-xs text-gray-500">Sign via QR with no network connection</div>
+          </div>
+          <input type="checkbox" class="toggle" />
+        </div>
+        <div class="text-xs text-gray-500 tracking-wider mb-2">PRIVACY DEFAULTS</div>
+        <div class="pill rounded-xl p-4 flex items-center justify-between mb-2">
+          <span class="text-sm">Default to shielded sends</span>
+          <input type="checkbox" class="toggle" checked />
+        </div>
+        <div class="pill rounded-xl p-4 flex items-center justify-between mb-6">
+          <span class="text-sm">Auto-hide balances</span>
+          <input type="checkbox" class="toggle" checked />
+        </div>
+        <button id="clear-wallet" class="w-full py-2.5 rounded-lg border border-red-900/50 text-red-400 text-sm">Remove from device</button>
+        <button id="switch-account" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mt-2">New account</button>
+        <button id="hw-wallet" class="w-full py-2.5 rounded-lg border border-gray-700 text-sm mt-2">Hardware wallet</button>
+      </div>
     </div>
+
+    <!-- Bottom nav -->
+    <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0c0e16] border-t border-gray-800 flex justify-around py-3 text-xs hidden">
+      <button data-nav="home" class="nav-item active flex flex-col items-center gap-1 text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+        Home
+      </button>
+      <a href="https://cypheranon-dev.github.io/Maskswap/" class="flex flex-col items-center gap-1 text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+        Swap
+      </a>
+      <a href="https://cypheranon-dev.github.io/ShieldLend/" class="flex flex-col items-center gap-1 text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+        Lend
+      </a>
+      <button data-nav="security" class="nav-item flex flex-col items-center gap-1 text-gray-500">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+        Security
+      </button>
+    </nav>
   </div>
   <div id="toast" class="toast"></div>
 
@@ -144,36 +253,71 @@
     }
     window.toast = toast;
 
-    let prices = { CYP: 0.25, ETH: 2500, BTC: 65000, SOL: 150 };
-    const cgIds = { ETH: 'ethereum', BTC: 'bitcoin', SOL: 'solana' };
+    let balanceHidden = true;
+    let realBalance = '0.00';
 
-    function renderPrices() {
-      const el = document.getElementById('price-list');
-      if (!el) return;
-      el.innerHTML = Object.entries(prices).map(([k, v]) =>
-        `<div><div class="text-gray-500">${k}</div><div class="accent font-medium">$${Number(v).toLocaleString(undefined,{maximumFractionDigits:k==='CYP'?2:0})}</div></div>`
-      ).join('');
+    function setBalanceDisplay(val) {
+      realBalance = val;
+      const el = document.getElementById('balance-display');
+      const asset = document.getElementById('asset-cyp');
+      if (balanceHidden) {
+        el.textContent = '••••••••';
+        if (asset) asset.textContent = '••••';
+      } else {
+        el.textContent = val;
+        if (asset) asset.textContent = val;
+      }
+    }
+    window.setBalanceDisplay = setBalanceDisplay;
+
+    document.getElementById('toggle-balance').onclick = () => {
+      balanceHidden = !balanceHidden;
+      setBalanceDisplay(realBalance);
+    };
+
+    function showView(name) {
+      ['home','send','receive','security'].forEach(v => {
+        document.getElementById('view-'+v).classList.toggle('hidden', v !== name);
+      });
+      document.querySelectorAll('[data-nav]').forEach(b => {
+        b.classList.toggle('active', b.dataset.nav === name);
+        b.classList.toggle('accent', b.dataset.nav === name);
+        b.classList.toggle('text-gray-500', b.dataset.nav !== name);
+      });
     }
 
-    async function fetchPrices() {
-      const status = document.getElementById('price-status');
-      try {
-        const ids = Object.values(cgIds).join(',');
-        const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${ids}&vs_currencies=usd`);
-        if (!res.ok) throw 0;
-        const data = await res.json();
-        if (data.ethereum?.usd) prices.ETH = data.ethereum.usd;
-        if (data.bitcoin?.usd) prices.BTC = data.bitcoin.usd;
-        if (data.solana?.usd) prices.SOL = data.solana.usd;
-        if (status) status.textContent = '';
-      } catch { if (status) status.textContent = ''; }
-      renderPrices();
-    }
+    document.querySelectorAll('[data-action]').forEach(b => {
+      b.onclick = () => showView(b.dataset.action);
+    });
+    document.querySelectorAll('[data-nav]').forEach(b => {
+      b.onclick = () => showView(b.dataset.nav);
+    });
 
+    // Show bottom nav when wallet is open
     const walletEl = document.getElementById('wallet');
+    const nav = document.getElementById('bottom-nav');
     new MutationObserver(() => {
-      if (!walletEl.classList.contains('hidden')) fetchPrices();
+      nav.classList.toggle('hidden', walletEl.classList.contains('hidden'));
     }).observe(walletEl, { attributes: true, attributeFilter: ['class'] });
+
+    document.getElementById('send-amt').oninput = function() {
+      const v = parseFloat(this.value) || 0;
+      document.getElementById('send-usd').textContent = '≈ $' + (v * 0.25).toFixed(2);
+    };
+    document.getElementById('send-max').onclick = () => {
+      const b = parseFloat(realBalance) || 0;
+      document.getElementById('send-amt').value = Math.max(0, b - 0.0004).toFixed(4);
+      document.getElementById('send-amt').dispatchEvent(new Event('input'));
+    };
+
+    document.getElementById('priv-shielded').onclick = function() {
+      this.className = 'flex-1 py-2.5 rounded-xl text-sm font-medium bg-[#2a2018] text-[#f0762a]';
+      document.getElementById('priv-transparent').className = 'flex-1 py-2.5 rounded-xl text-sm text-gray-400 pill';
+    };
+    document.getElementById('priv-transparent').onclick = function() {
+      this.className = 'flex-1 py-2.5 rounded-xl text-sm font-medium bg-[#2a2018] text-[#f0762a]';
+      document.getElementById('priv-shielded').className = 'flex-1 py-2.5 rounded-xl text-sm text-gray-400 pill';
+    };
   </script>
 </body>
 </html>
