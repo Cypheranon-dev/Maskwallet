@@ -186,6 +186,61 @@ if (newAddr) newAddr.onclick = () => {
   toast('New address');
 };
 
+
+function renderWalletMenu() {
+  const list = document.getElementById('wallet-list');
+  if (!list) return;
+  list.innerHTML = wallets.map((w, i) =>
+    `<button data-w="${i}" class="w-full text-left text-xs py-1.5 px-2 rounded ${i===accountIndex?'accent':''}">${w.name || walletLabel(i)}</button>`
+  ).join('') || '<div class="text-xs text-gray-500 px-2 py-1">No wallets</div>';
+  list.querySelectorAll('button').forEach(b => {
+    b.onclick = () => {
+      accountIndex = parseInt(b.dataset.w);
+      isNewWallet = false;
+      openWallet();
+      document.getElementById('wallet-menu').classList.add('hidden');
+    };
+  });
+}
+
+const ws = document.getElementById('wallet-switcher');
+const menu = document.getElementById('wallet-menu');
+if (ws && menu) {
+  ws.onclick = (e) => {
+    e.stopPropagation();
+    menu.classList.toggle('hidden');
+    if (!menu.classList.contains('hidden')) renderWalletMenu();
+  };
+  document.addEventListener('click', () => menu.classList.add('hidden'));
+}
+
+document.getElementById('menu-create')?.addEventListener('click', async (e) => {
+  e.stopPropagation();
+  menu.classList.add('hidden');
+  currentMnemonic = bip39.generateMnemonic(wordlist, seedBits);
+  if (!bip39.validateMnemonic(currentMnemonic, wordlist)) return toast('Generation failed');
+  accountIndex = wallets.length;
+  addressIndex = 0;
+  isNewWallet = true;
+  renderSeed(currentMnemonic);
+  show('seed-screen');
+});
+
+document.getElementById('menu-import')?.addEventListener('click', (e) => {
+  e.stopPropagation();
+  menu.classList.add('hidden');
+  const phrase = prompt('Paste seed phrase (12/15/18/21/24 words):');
+  if (!phrase) return;
+  const cleaned = phrase.trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!bip39.validateMnemonic(cleaned, wordlist)) return toast('Invalid seed phrase');
+  currentMnemonic = cleaned;
+  accountIndex = wallets.length;
+  addressIndex = 0;
+  isNewWallet = false;
+  openWallet();
+  toast('Imported ' + walletLabel(accountIndex));
+});
+
 const switchAcct = document.getElementById('switch-account');
 if (switchAcct) switchAcct.onclick = async () => {
   const choice = prompt('Add wallet:\n1 = Create new random seed\n2 = Import existing seed\n\nEnter 1 or 2:');
