@@ -117,7 +117,14 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <div class="w-8 h-8 rounded-full bg-[#f0762a] text-[#05070d] flex items-center justify-center text-xs font-semibold">M</div>
-            <button id="wallet-switcher" class="text-sm font-medium">Wallet A ▾</button>
+            <div class="relative">
+              <button id="wallet-switcher" class="text-sm font-medium">Wallet A ▾</button>
+              <div id="wallet-menu" class="hidden absolute left-0 top-8 z-30 w-56 pill rounded-xl p-2 shadow-lg">
+                <div id="wallet-list" class="max-h-40 overflow-auto mb-2"></div>
+                <button id="menu-create" class="w-full text-left text-xs py-2 px-2 rounded hover:bg-white/5">+ Create new wallet</button>
+                <button id="menu-import" class="w-full text-left text-xs py-2 px-2 rounded hover:bg-white/5">↓ Import from seed</button>
+              </div>
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <button id="theme-toggle" class="w-8 h-8 rounded-full pill flex items-center justify-center text-sm" title="Toggle theme">☀</button>
