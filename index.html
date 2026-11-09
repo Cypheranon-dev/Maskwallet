@@ -271,10 +271,10 @@
         <div class="text-sm font-medium mb-1">DeFi Tools</div>
         <div class="text-xs text-gray-500 mb-3">Your must-have tools for Cypher.</div>
         <div class="grid grid-cols-4 gap-2 mb-5">
-          <a href="https://cypheranon-dev.github.io/Maskswap/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">MS</div><div class="text-[10px]">MaskSwap</div></a>
-          <a href="https://cypheranon-dev.github.io/ShieldLend/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">SL</div><div class="text-[10px]">ShieldLend</div></a>
-          <a href="https://cypheranon-dev.github.io/CypherBridge/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">CB</div><div class="text-[10px]">Bridge</div></a>
-          <a href="https://cypheranon-dev.github.io/CypherDAO/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">DAO</div><div class="text-[10px]">DAO</div></a>
+          <button data-nav="swap" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">MS</div><div class="text-[10px]">MaskSwap</div></a>
+          <button data-nav="lend" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">SL</div><div class="text-[10px]">ShieldLend</div></a>
+          <button data-nav="bridge" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">CB</div><div class="text-[10px]">Bridge</div></a>
+          <button data-nav="dao" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">DAO</div><div class="text-[10px]">DAO</div></a>
         </div>
         <div class="text-sm font-medium mb-3 mt-2">Hot coins</div>
         <div class="space-y-3 mb-5 text-sm">
@@ -301,7 +301,7 @@
         <div class="text-sm font-medium mb-1">Oracle & Mining</div>
         <div class="text-xs text-gray-500 mb-3">Native AI oracle and Equihash pools.</div>
         <div class="grid grid-cols-4 gap-2">
-          <a href="https://cypheranon-dev.github.io/CypherOracle/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">OR</div><div class="text-[10px]">Oracle</div></a>
+          <button data-nav="oracle" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">OR</div><div class="text-[10px]">Oracle</div></a>
           <a href="https://cypheranon-dev.github.io/CypherDAO/" class="text-center"><div class="w-12 h-12 mx-auto rounded-full bg-[#2a2018] flex items-center justify-center accent text-xs mb-1">⛏</div><div class="text-[10px]">Mining</div></a>
         </div>
       </div>
@@ -326,31 +326,113 @@
       </div>
 
 
-      <!-- Swap (internal tab) -->
-      <div id="view-swap" class="hidden flex-1 p-4">
+      <!-- Swap (full internal interface) -->
+      <div id="view-swap" class="hidden flex-1 p-4 flex flex-col">
         <div class="text-lg font-semibold mb-4">Swap</div>
-        <div class="pill rounded-xl p-4 mb-4">
+        <div class="pill rounded-xl p-4 mb-3">
           <div class="text-xs text-gray-500 mb-1">From</div>
-          <div class="flex justify-between items-center"><span class="text-2xl">500.00</span><span class="accent text-sm">C CYPHER</span></div>
-          <div class="text-center my-2 text-gray-500">↓</div>
+          <div class="flex items-center justify-between">
+            <input id="w-from-amt" type="number" step="any" placeholder="0.00" class="bg-transparent text-2xl w-1/2 outline-none" />
+            <select id="w-from-asset" class="pill text-sm px-3 py-1.5 rounded-full accent">
+              <option value="CYP">CYPHER</option>
+              <option value="ETH">cETH</option>
+              <option value="BTC">cBTC</option>
+              <option value="SOL">cSOL</option>
+            </select>
+          </div>
+          <div class="text-xs text-gray-500 mt-1">Bal: <span id="w-from-bal">0</span></div>
+          <div class="text-center my-2"><button id="w-switch" class="text-gray-500">↓</button></div>
           <div class="text-xs text-gray-500 mb-1">To</div>
-          <div class="flex justify-between items-center"><span class="text-2xl">0.0208</span><span class="accent text-sm">B cBTC</span></div>
+          <div class="flex items-center justify-between">
+            <input id="w-to-amt" type="text" readonly placeholder="0.00" class="bg-transparent text-2xl w-1/2 outline-none text-gray-300" />
+            <select id="w-to-asset" class="pill text-sm px-3 py-1.5 rounded-full accent">
+              <option value="BTC">cBTC</option>
+              <option value="CYP" selected>CYPHER</option>
+              <option value="ETH">cETH</option>
+              <option value="SOL">cSOL</option>
+            </select>
+          </div>
         </div>
+        <div class="flex justify-between text-xs text-gray-500 mb-3"><span>Rate</span><span id="w-rate">—</span></div>
         <p class="text-xs text-gray-500 mb-4">Routed through the shielded pool — no public order trail.</p>
-        <a href="https://cypheranon-dev.github.io/Maskswap/" class="btn w-full py-4 rounded-2xl text-center block">Open full Swap</a>
+        <button id="w-swap-btn" class="btn w-full py-4 rounded-2xl mt-auto">Review Swap</button>
       </div>
 
-      <!-- Lend (internal tab) -->
-      <div id="view-lend" class="hidden flex-1 p-4">
+      <!-- Lend (full internal interface) -->
+      <div id="view-lend" class="hidden flex-1 p-4 flex flex-col">
         <div class="text-lg font-semibold mb-4">ShieldLend</div>
         <div class="pill rounded-xl p-4 mb-4 grid grid-cols-3 text-center">
           <div><div class="text-xs text-gray-500">Net APY</div><div class="accent font-semibold">6.8%</div></div>
-          <div><div class="text-xs text-gray-500">Supplied</div><div>$9,120</div></div>
-          <div><div class="text-xs text-gray-500">Borrowed</div><div>$2,040</div></div>
+          <div><div class="text-xs text-gray-500">Supplied</div><div id="w-supplied">$9,120</div></div>
+          <div><div class="text-xs text-gray-500">Borrowed</div><div id="w-borrowed">$2,040</div></div>
         </div>
-        <p class="text-xs text-gray-500 mb-4">Positions proven via range proofs. Balances stay hidden.</p>
-        <a href="https://cypheranon-dev.github.io/ShieldLend/" class="btn w-full py-4 rounded-2xl text-center block">Open full Lend</a>
+        <div class="flex gap-2 mb-3">
+          <button id="w-tab-supply" class="flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]">Supply</button>
+          <button id="w-tab-borrow" class="flex-1 py-2 rounded-xl text-sm pill text-gray-500">Borrow</button>
+        </div>
+        <div class="pill rounded-xl p-3 mb-3 text-xs space-y-2">
+          <div class="flex justify-between"><span>CYPHER</span><span class="accent">4.2% / 7.1%</span></div>
+          <div class="flex justify-between"><span>cBTC</span><span class="accent">1.8% / 3.4%</span></div>
+          <div class="flex justify-between"><span>cETH</span><span class="accent">3.0% / 5.6%</span></div>
+        </div>
+        <input id="w-lend-amt" type="number" step="any" placeholder="Amount" class="input w-full rounded-xl px-4 py-3 text-sm mb-2" />
+        <select id="w-lend-asset" class="input w-full rounded-xl px-4 py-3 text-sm mb-4">
+          <option>CYP</option><option>BTC</option><option>ETH</option>
+        </select>
+        <button id="w-lend-confirm" class="btn w-full py-4 rounded-2xl mt-auto">Confirm</button>
+        <p class="text-[10px] text-gray-600 mt-2">Positions proven via range proofs. Balances stay hidden.</p>
       </div>
+      <!-- Bridge (internal) -->
+      <div id="view-bridge" class="hidden flex-1 p-4 flex flex-col">
+        <div class="text-lg font-semibold mb-4">Bridge</div>
+        <div class="pill rounded-xl p-4 mb-2">
+          <div class="text-xs text-gray-500 mb-1">From</div>
+          <select id="w-br-from" class="bg-transparent w-full text-lg outline-none"><option>Ethereum</option><option>Bitcoin</option><option>Solana</option><option>Cypher</option></select>
+        </div>
+        <div class="text-center my-1 text-gray-500">↓</div>
+        <div class="pill rounded-xl p-4 mb-3">
+          <div class="text-xs text-gray-500 mb-1">To</div>
+          <select id="w-br-to" class="bg-transparent w-full text-lg outline-none"><option>Cypher</option><option>Ethereum</option><option>Bitcoin</option><option>Solana</option></select>
+        </div>
+        <input id="w-br-amt" type="number" step="any" placeholder="0.00" class="input w-full rounded-xl px-4 py-3 text-2xl mb-3" />
+        <div class="flex justify-between text-xs text-gray-500 mb-4"><span>Est. time</span><span>≈ 4 min</span></div>
+        <p class="text-xs text-gray-500 mb-4">Verified by zk light-client proof — no custodial multisig.</p>
+        <button id="w-br-btn" class="btn w-full py-4 rounded-2xl mt-auto">Review Bridge</button>
+      </div>
+
+      <!-- DAO (internal) -->
+      <div id="view-dao" class="hidden flex-1 p-4">
+        <div class="text-lg font-semibold mb-4">DAO & Mining</div>
+        <div class="pill rounded-xl p-4 mb-3 grid grid-cols-2 text-center">
+          <div><div class="text-xs text-gray-500">Proposals</div><div class="font-semibold">3 active</div></div>
+          <div><div class="text-xs text-gray-500">Your stake</div><div class="accent">12,400 CYP</div></div>
+        </div>
+        <div class="space-y-2 text-sm mb-4">
+          <div class="pill rounded-xl p-3 flex justify-between"><span>CIP-12 emission tweak</span><span class="accent text-xs">Vote</span></div>
+          <div class="pill rounded-xl p-3 flex justify-between"><span>Add mesh relay</span><span class="accent text-xs">Vote</span></div>
+        </div>
+        <div class="text-xs text-gray-500 mb-2">Equihash pools</div>
+        <div class="pill rounded-xl p-3 text-sm">Pool A · 42 TH/s · 1.2% fee</div>
+        <button class="btn w-full py-3 rounded-2xl mt-4" onclick="toast('Stake prepared')">Stake to mine</button>
+      </div>
+
+      <!-- Oracle (internal) -->
+      <div id="view-oracle" class="hidden flex-1 p-4">
+        <div class="text-lg font-semibold mb-4">Oracle</div>
+        <div class="pill rounded-xl p-4 mb-3 grid grid-cols-3 text-center">
+          <div><div class="text-xs text-gray-500">Nodes</div><div>24</div></div>
+          <div><div class="text-xs text-gray-500">Stake</div><div class="accent">12.4M</div></div>
+          <div><div class="text-xs text-gray-500">Accuracy</div><div>99.2%</div></div>
+        </div>
+        <div class="space-y-1 text-sm mb-4">
+          <div class="flex justify-between"><span>CYPHER/USD</span><span>$0.2500</span></div>
+          <div class="flex justify-between"><span>cBTC/USD</span><span>$67,420</span></div>
+          <div class="flex justify-between"><span>cETH/USD</span><span>$2,481</span></div>
+        </div>
+        <p class="text-xs text-gray-500">Stake-weighted native AI. Autoscaling. Self-learning.</p>
+        <button class="btn w-full py-3 rounded-2xl mt-4" onclick="toast('Stake prepared')">Stake to oracle</button>
+      </div>
+
 
       <!-- Security -->
       <div id="view-security" class="hidden flex-1 p-4 overflow-auto">
@@ -453,7 +535,7 @@
       setBalanceDisplay(realBalance);
     };
 
-    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review','swap','lend','browser'];
+    const views = ['home','send','receive','security','activity','asset','dapp','vkey','review','swap','lend','bridge','dao','oracle','browser'];
     function showView(name) {
       window.showView = showView;
       views.forEach(v => {
@@ -537,6 +619,47 @@
         localStorage.setItem('mask_theme', isLight ? 'light' : 'dark');
       };
     }
+
+    // Internal swap
+    (function(){
+      const prices = {CYP:0.25, ETH:2481, BTC:67420, SOL:150};
+      const bals = {CYP:1000, ETH:1.228, BTC:0.0412, SOL:12.5};
+      function upd(){
+        const f=document.getElementById('w-from-asset')?.value;
+        const t=document.getElementById('w-to-asset')?.value;
+        if(!f||!t) return;
+        document.getElementById('w-rate').textContent = `1 ${f} ≈ ${(prices[f]/prices[t]).toFixed(6)} ${t}`;
+        const amt=parseFloat(document.getElementById('w-from-amt').value)||0;
+        document.getElementById('w-to-amt').value = amt ? (amt*prices[f]/prices[t]).toFixed(4) : '';
+        document.getElementById('w-from-bal').textContent = bals[f];
+      }
+      document.getElementById('w-from-asset')?.addEventListener('change', upd);
+      document.getElementById('w-to-asset')?.addEventListener('change', upd);
+      document.getElementById('w-from-amt')?.addEventListener('input', upd);
+      document.getElementById('w-switch')?.addEventListener('click', ()=>{
+        const f=document.getElementById('w-from-asset'), t=document.getElementById('w-to-asset');
+        [f.value,t.value]=[t.value,f.value]; upd();
+      });
+      document.getElementById('w-swap-btn')?.addEventListener('click', ()=>{
+        const amt=parseFloat(document.getElementById('w-from-amt').value);
+        if(!amt||amt<=0) return toast('Enter amount');
+        toast('Swap prepared · shielded');
+      });
+      // Lend
+      let mode='supply';
+      document.getElementById('w-tab-supply')?.addEventListener('click', function(){ mode='supply'; this.className='flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]'; document.getElementById('w-tab-borrow').className='flex-1 py-2 rounded-xl text-sm pill text-gray-500'; });
+      document.getElementById('w-tab-borrow')?.addEventListener('click', function(){ mode='borrow'; this.className='flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]'; document.getElementById('w-tab-supply').className='flex-1 py-2 rounded-xl text-sm pill text-gray-500'; });
+      document.getElementById('w-lend-confirm')?.addEventListener('click', ()=>{
+        const amt=parseFloat(document.getElementById('w-lend-amt').value);
+        if(!amt||amt<=0) return toast('Enter amount');
+        toast(mode==='supply'?'Supplied':'Borrowed');
+      });
+      document.getElementById('w-br-btn')?.addEventListener('click', ()=>{
+        const amt=document.getElementById('w-br-amt').value;
+        if(!amt||amt<=0) return toast('Enter amount');
+        toast('Bridge prepared · zk light-client');
+      });
+    })();
 </script>
 </body>
 </html>
