@@ -663,7 +663,7 @@
         const el = document.getElementById('w-swap-history');
         if(!el||!w) return;
         const swaps = w.history.filter(x=>x.type==='swap').slice(0,6);
-        el.innerHTML = swaps.length ? swaps.map(x=>`<div class="py-1 border-b border-gray-800/40">${x.detail}</div>`).join('') : '<div class="text-gray-500">No swaps yet</div>';
+        el.innerHTML = swaps.length ? swaps.map((x,i)=>`<div class="flex justify-between items-center py-1 border-b border-gray-800/40"><span>${x.detail}</span><button onclick="window.demo.swapBack(${i});window.refreshDemo();renderSwapHist()" class="accent text-[10px]">Swap back</button></div>`).join('') : '<div class="text-gray-500">No swaps yet</div>';
       }
       let mode='supply';
       document.getElementById('w-tab-supply')?.addEventListener('click', function(){ mode='supply'; this.className='flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]'; document.getElementById('w-tab-borrow').className='flex-1 py-2 rounded-xl text-sm pill text-gray-500'; });

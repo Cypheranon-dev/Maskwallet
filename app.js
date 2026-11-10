@@ -401,6 +401,35 @@ window.demo = {
   yieldOf(p) {
     const days = (Date.now() - p.t) / 864e5;
     return (p.amt * (p.apy||4)/100 * days);
+  },
+  exit(i) {
+    const w = this.get();
+    const p = w.positions[i];
+    if (!p) return false;
+    const y = this.yieldOf(p);
+    if (p.type === 'supply') {
+      w.assets[p.asset] = (w.assets[p.asset]||0) + p.amt + y;
+    } else {
+      w.assets[p.asset] = (w.assets[p.asset]||0) + p.amt;
+      w.assets.CYP = Math.max(0, (w.assets.CYP||0) - (p.cyp||0));
+    }
+    w.positions.splice(i, 1);
+    w.history.unshift({ type:'exit', detail:`Exited ${p.type} ${p.amt} ${p.asset}`, t: Date.now() });
+    this.save(); return true;
+  },
+  swapBack(i) {
+    const w = this.get();
+    const h = w.history.filter(x => x.type === 'swap')[i];
+    if (!h) return false;
+    const m = h.detail.match(/Swapped ([\d.]+) (\w+) → ([\d.]+) (\w+)/);
+    if (!m) return false;
+    const [, amt, from, out, to] = m;
+    const a = parseFloat(amt), o = parseFloat(out);
+    if ((w.assets[to]||0) < o) return false;
+    w.assets[to] -= o;
+    w.assets[from] = (w.assets[from]||0) + a;
+    w.history.unshift({ type:'swapback', detail:`Swapped back ${o} ${to} → ${a} ${from}`, t: Date.now() });
+    this.save(); return true;
   }
 };
 window.refreshDemo = function() {
@@ -414,9 +443,9 @@ window.refreshDemo = function() {
   const pos = document.getElementById('w-positions');
   if (pos) {
     if (!w.positions.length) pos.innerHTML = '<div class="text-xs text-gray-500">No active positions</div>';
-    else pos.innerHTML = w.positions.map(p => {
+    else pos.innerHTML = w.positions.map((p, i) => {
       const y = window.demo.yieldOf(p);
-      return `<div class="flex justify-between text-xs py-1"><span>${p.type} ${p.amt} ${p.asset}</span><span class="accent">+${y.toFixed(4)} yield</span></div>`;
+      return `<div class="flex justify-between items-center text-xs py-1"><span>${p.type} ${p.amt} ${p.asset} <span class="accent">+${y.toFixed(4)}</span></span><button onclick="window.demo.exit(${i});window.refreshDemo()" class="text-red-400">Exit</button></div>`;
     }).join('');
   }
   // shielded history (only this wallet)
