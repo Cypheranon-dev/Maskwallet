@@ -133,10 +133,28 @@ if (setPwBtn) setPwBtn.onclick = async () => {
   openWallet();
 };
 
-function openWallet() {
-  if (!wallets[accountIndex]) {
-    wallets[accountIndex] = { name: walletLabel(accountIndex), ua: '', bal: isNewWallet ? 1000 : 7240.12 };
+function uniqueOddBal() {
+  const used = new Set(wallets.map(w => Math.round(w.bal||0)));
+  let n = 1001 + wallets.length * 2;
+  while (used.has(n) || n % 2 === 0) n += 2;
+  return n;
+}
+function ensureWallet(i) {
+  if (!wallets[i]) {
+    const bal = uniqueOddBal();
+    wallets[i] = {
+      name: walletLabel(i), ua: '', bal,
+      assets: { CYP: bal, BTC: +(0.001 + Math.random()*0.05).toFixed(4), ETH: +(0.1 + Math.random()*2).toFixed(3), SOL: +(1 + Math.random()*20).toFixed(1) },
+      positions: [], history: []
+    };
   }
+  if (!wallets[i].assets) wallets[i].assets = { CYP: wallets[i].bal||0, BTC:0.04, ETH:1.2, SOL:12 };
+  if (!wallets[i].positions) wallets[i].positions = [];
+  if (!wallets[i].history) wallets[i].history = [];
+  return wallets[i];
+}
+function openWallet() {
+  ensureWallet(accountIndex);
   if (currentMnemonic && currentMnemonic !== 'restored') wallets[accountIndex].seed = currentMnemonic;
   currentUA = generateUA(accountIndex, addressIndex);
   wallets[accountIndex].ua = currentUA;
@@ -152,16 +170,17 @@ function openWallet() {
   }
   show('wallet');
 
-  if (isNewWallet && !wallets[accountIndex].bal) wallets[accountIndex].bal = 1000;
-  const bal = (wallets[accountIndex].bal || 0).toFixed(2);
+  const w = wallets[accountIndex];
+  const bal = (w.assets.CYP || 0).toFixed(2);
   saveWallets();
   if (window.setBalanceDisplay) window.setBalanceDisplay(bal);
   const asset = document.getElementById('asset-cyp');
   if (asset) asset.textContent = bal;
   const usd = document.getElementById('asset-cyp-usd');
   if (usd) usd.textContent = '$' + (parseFloat(bal) * cypPrice).toFixed(2);
+  if (window.refreshDemo) window.refreshDemo();
   if (isNewWallet) {
-    toast('Wallet created · 1,000 CYP');
+    toast('Wallet created · ' + Math.round(w.assets.CYP) + ' CYP');
     isNewWallet = false;
   }
   localStorage.setItem('mask_has_wallet', '1');
@@ -346,3 +365,66 @@ document.querySelectorAll('#view-dapp button').forEach(btn => {
 
 window.showView = window.showView || function(n){};
 window.openInBrowser = openInBrowser;
+
+// Demo execution API (shielded, per-wallet)
+window.demo = {
+  get() { return ensureWallet(accountIndex); },
+  save() { saveWallets(); },
+  supply(asset, amt) {
+    const w = this.get();
+    if ((w.assets[asset]||0) < amt) return false;
+    w.assets[asset] -= amt;
+    w.positions.push({ type:'supply', asset, amt, apy: asset==='CYP'?4.2:asset==='BTC'?1.8:3.0, t: Date.now() });
+    w.history.unshift({ type:'supply', detail:`Supplied ${amt} ${asset}`, t: Date.now() });
+    this.save(); return true;
+  },
+  borrow(asset, amt) {
+    const w = this.get();
+    if ((w.assets[asset]||0) < amt) return false;
+    w.assets[asset] -= amt;
+    const cyp = amt * ({BTC:67420,ETH:2481,SOL:150,CYP:0.25}[asset]||1) / 0.25;
+    w.assets.CYP = (w.assets.CYP||0) + cyp;
+    w.positions.push({ type:'borrow', asset, amt, cyp, apy: asset==='CYP'?7.1:asset==='BTC'?3.4:5.6, t: Date.now() });
+    w.history.unshift({ type:'borrow', detail:`Borrowed ${cyp.toFixed(0)} CYP against ${amt} ${asset}`, t: Date.now() });
+    this.save(); return true;
+  },
+  swap(from, to, amt) {
+    const w = this.get();
+    if ((w.assets[from]||0) < amt) return false;
+    const prices = {CYP:0.25,ETH:2481,BTC:67420,SOL:150};
+    const out = amt * prices[from] / prices[to];
+    w.assets[from] -= amt;
+    w.assets[to] = (w.assets[to]||0) + out;
+    w.history.unshift({ type:'swap', detail:`Swapped ${amt} ${from} → ${out.toFixed(4)} ${to}`, t: Date.now() });
+    this.save(); return out;
+  },
+  yieldOf(p) {
+    const days = (Date.now() - p.t) / 864e5;
+    return (p.amt * (p.apy||4)/100 * days);
+  }
+};
+window.refreshDemo = function() {
+  const w = ensureWallet(accountIndex);
+  const el = document.getElementById('asset-cyp');
+  if (el) el.textContent = (w.assets.CYP||0).toFixed(2);
+  const usd = document.getElementById('asset-cyp-usd');
+  if (usd) usd.textContent = '$' + ((w.assets.CYP||0)*0.25).toFixed(2);
+  if (window.setBalanceDisplay) window.setBalanceDisplay((w.assets.CYP||0).toFixed(2));
+  // active positions
+  const pos = document.getElementById('w-positions');
+  if (pos) {
+    if (!w.positions.length) pos.innerHTML = '<div class="text-xs text-gray-500">No active positions</div>';
+    else pos.innerHTML = w.positions.map(p => {
+      const y = window.demo.yieldOf(p);
+      return `<div class="flex justify-between text-xs py-1"><span>${p.type} ${p.amt} ${p.asset}</span><span class="accent">+${y.toFixed(4)} yield</span></div>`;
+    }).join('');
+  }
+  // shielded history (only this wallet)
+  const h = document.getElementById('w-history');
+  if (h) {
+    if (!w.history.length) h.innerHTML = '<div class="text-xs text-gray-500">No activity yet</div>';
+    else h.innerHTML = w.history.slice(0,8).map(x => `<div class="flex justify-between text-xs py-1 border-b border-gray-800/50"><span>${x.detail}</span><span class="text-gray-500">${new Date(x.t).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}</span></div>`).join('');
+  }
+  const fb = document.getElementById('w-from-bal');
+  if (fb) fb.textContent = (w.assets[document.getElementById('w-from-asset')?.value]||0).toFixed(4);
+};

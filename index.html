@@ -355,7 +355,9 @@
         </div>
         <div class="flex justify-between text-xs text-gray-500 mb-3"><span>Rate</span><span id="w-rate">—</span></div>
         <p class="text-xs text-gray-500 mb-4">Routed through the shielded pool — no public order trail.</p>
-        <button id="w-swap-btn" class="btn w-full py-4 rounded-2xl mt-auto">Review Swap</button>
+        <button id="w-swap-btn" class="btn w-full py-4 rounded-2xl">Review Swap</button>
+        <div class="text-xs text-gray-500 mt-3 mb-1">Your swaps (shielded)</div>
+        <div id="w-swap-history" class="pill rounded-xl p-2 text-xs"></div>
       </div>
 
       <!-- Lend (full internal interface) -->
@@ -379,8 +381,12 @@
         <select id="w-lend-asset" class="input w-full rounded-xl px-4 py-3 text-sm mb-4">
           <option>CYP</option><option>BTC</option><option>ETH</option>
         </select>
-        <button id="w-lend-confirm" class="btn w-full py-4 rounded-2xl mt-auto">Confirm</button>
-        <p class="text-[10px] text-gray-600 mt-2">Positions proven via range proofs. Balances stay hidden.</p>
+        <button id="w-lend-confirm" class="btn w-full py-4 rounded-2xl">Confirm</button>
+        <div class="text-xs text-gray-500 mt-3 mb-1">Active positions</div>
+        <div id="w-positions" class="pill rounded-xl p-2 mb-2"></div>
+        <div class="text-xs text-gray-500 mb-1">Your activity (shielded)</div>
+        <div id="w-history" class="pill rounded-xl p-2"></div>
+        <p class="text-[10px] text-gray-600 mt-2">History is private to this wallet. Public interface shows nothing.</p>
       </div>
       <!-- Bridge (internal) -->
       <div id="view-bridge" class="hidden flex-1 p-4 flex flex-col">
@@ -620,10 +626,9 @@
       };
     }
 
-    // Internal swap
+    // Internal demo execution
     (function(){
       const prices = {CYP:0.25, ETH:2481, BTC:67420, SOL:150};
-      const bals = {CYP:1000, ETH:1.228, BTC:0.0412, SOL:12.5};
       function upd(){
         const f=document.getElementById('w-from-asset')?.value;
         const t=document.getElementById('w-to-asset')?.value;
@@ -631,7 +636,7 @@
         document.getElementById('w-rate').textContent = `1 ${f} ≈ ${(prices[f]/prices[t]).toFixed(6)} ${t}`;
         const amt=parseFloat(document.getElementById('w-from-amt').value)||0;
         document.getElementById('w-to-amt').value = amt ? (amt*prices[f]/prices[t]).toFixed(4) : '';
-        document.getElementById('w-from-bal').textContent = bals[f];
+        if (window.demo) document.getElementById('w-from-bal').textContent = (window.demo.get().assets[f]||0).toFixed(4);
       }
       document.getElementById('w-from-asset')?.addEventListener('change', upd);
       document.getElementById('w-to-asset')?.addEventListener('change', upd);
@@ -642,24 +647,46 @@
       });
       document.getElementById('w-swap-btn')?.addEventListener('click', ()=>{
         const amt=parseFloat(document.getElementById('w-from-amt').value);
+        const f=document.getElementById('w-from-asset').value;
+        const t=document.getElementById('w-to-asset').value;
         if(!amt||amt<=0) return toast('Enter amount');
-        toast('Swap prepared · shielded');
+        const out = window.demo?.swap(f, t, amt);
+        if(out===false) return toast('Insufficient');
+        toast('Swapped · shielded');
+        document.getElementById('w-from-amt').value='';
+        upd();
+        renderSwapHist();
+        window.refreshDemo?.();
       });
-      // Lend
+      function renderSwapHist(){
+        const w = window.demo?.get();
+        const el = document.getElementById('w-swap-history');
+        if(!el||!w) return;
+        const swaps = w.history.filter(x=>x.type==='swap').slice(0,6);
+        el.innerHTML = swaps.length ? swaps.map(x=>`<div class="py-1 border-b border-gray-800/40">${x.detail}</div>`).join('') : '<div class="text-gray-500">No swaps yet</div>';
+      }
       let mode='supply';
       document.getElementById('w-tab-supply')?.addEventListener('click', function(){ mode='supply'; this.className='flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]'; document.getElementById('w-tab-borrow').className='flex-1 py-2 rounded-xl text-sm pill text-gray-500'; });
       document.getElementById('w-tab-borrow')?.addEventListener('click', function(){ mode='borrow'; this.className='flex-1 py-2 rounded-xl text-sm bg-[#2a2018] text-[#f0762a]'; document.getElementById('w-tab-supply').className='flex-1 py-2 rounded-xl text-sm pill text-gray-500'; });
       document.getElementById('w-lend-confirm')?.addEventListener('click', ()=>{
         const amt=parseFloat(document.getElementById('w-lend-amt').value);
+        const asset=document.getElementById('w-lend-asset').value;
         if(!amt||amt<=0) return toast('Enter amount');
-        toast(mode==='supply'?'Supplied':'Borrowed');
+        const ok = mode==='supply' ? window.demo?.supply(asset, amt) : window.demo?.borrow(asset, amt);
+        if(!ok) return toast('Insufficient');
+        toast(mode==='supply'?'Supplied · yield active':'Borrowed');
+        document.getElementById('w-lend-amt').value='';
+        window.refreshDemo?.();
       });
       document.getElementById('w-br-btn')?.addEventListener('click', ()=>{
         const amt=document.getElementById('w-br-amt').value;
         if(!amt||amt<=0) return toast('Enter amount');
         toast('Bridge prepared · zk light-client');
       });
-    })();
+      // refresh when views shown
+      document.querySelectorAll('[data-nav="swap"],[data-nav="lend"]').forEach(b => b.addEventListener('click', () => setTimeout(()=>{ upd(); window.refreshDemo?.(); renderSwapHist(); }, 50)));
+      setTimeout(()=>{ upd(); window.refreshDemo?.(); renderSwapHist(); }, 300);
+    })();;
 </script>
 </body>
 </html>
